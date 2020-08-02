@@ -1,15 +1,15 @@
 Kvant
-=================================
+=====
 
 .. toctree::
    :maxdepth: 1
-   :caption: Introduction
     
    intro
+   installation
 
 .. toctree::
    :maxdepth: 2
-   :caption: Indicators
+   :caption: Usage
 
    indicators
 

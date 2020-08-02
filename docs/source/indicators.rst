@@ -1,10 +1,11 @@
 Indicators
 ##########
-This section describes the usage of the different indicators that currently are available.
+This section describes the available indicators and demonstrates the usage.
 
 Trend
 =====
-SMA
+.. automodule:: quant
+    :members: sma
 
 Momentum
 ========
