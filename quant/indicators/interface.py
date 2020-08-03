@@ -14,6 +14,20 @@ from quant.indicators.momentum import *
 from quant.indicators.volume import *
 from quant.indicators.stat import *
 
+def _validate_input(data = None, period = None):
+    """
+    General function to validate specified user parameters.
+    """
+    if data is not None:
+        if not isinstance(data, np.ndarray) or data.dtype != np.float64:
+            raise ValueError("Param 'data' needs to be of type numpy.ndarray with " \
+                "dtype numpy.float64, i.e. double")
+    
+    if period is not None:
+        if not isinstance(period, int) or period <= 0:
+            raise ValueError("Param 'period' needs to be an int greater than zero")
+
+
 # Trend interface
 # ---------------
 def sma(data, period):
@@ -22,16 +36,18 @@ def sma(data, period):
     
     Parameters
     ----------
-    data : `ndarray.float64`
-        Numpy array containing the data to be used.
+    data : `ndarray`
+        Array of type float64 containing the data to be used.
     period : `int`
         Number of periods to be used.
     
     Returns
     -------
-    `ndarray.float64`
-        Returns a numpy ndarray with calculated simple moving averages.
+    `ndarray`
+        Returns a numpy ndarray of type float64 with simple moving averages.
     """
+    _validate_input(data = data, period = period)
+
     return sma_calc(data, period)
 
 def ema(data, period):
@@ -40,17 +56,20 @@ def ema(data, period):
     
     Parameters
     ----------
-    data : `ndarray.float64`
-        Numpy array containing the data to be used.
+    data : `ndarray`
+        Array of type float64 containing the data to be used.
     period : `int`
         Number of periods to be used.
     
     Returns
     -------
-    `ndarray.float64`
-        Returns a numpy ndarray with calculated simple moving averages.
+    `ndarray`
+        Returns a ndarray of type float64 with exponential moving averages.
     """
+    _validate_input(data = data, period = period)
+
     return ema_calc(data, period)
+
 
 def dema(data, periods):
     return dema_calc(data, periods)
