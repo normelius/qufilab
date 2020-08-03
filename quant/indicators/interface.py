@@ -18,7 +18,7 @@ from quant.indicators.stat import *
 # ---------------
 def sma(data, period):
     """
-    Compute trailing simple moving average with the specified period.
+    Compute trailing simple moving average with the specified period
 
     Parameters
     ----------
