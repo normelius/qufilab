@@ -20,12 +20,17 @@ def sma(data, period):
     """
     Compute trailing simple moving average with the specified period.
     
-    Args:
-        data (ndarray.float64): Numpy array containing the data to be used.
-        period (int): Number of periods to be used.
-
-    Returns:
-        ndarray.float64: Returns a numpy ndarray with calculated simple moving averages.
+    Parameters
+    ----------
+    data : ndarray.float64: 
+        Numpy array containing the data to be used.
+    period : int
+        Number of periods to be used.
+    
+    Returns
+    -------
+    ndarray.float64
+        Returns a numpy ndarray with calculated simple moving averages.
     """
     return sma_calc(data, period)
 
@@ -77,6 +82,9 @@ def cv(highs, lows, period = 10, smoothing_period = 10):
     :type period: int
     :param smoothing_period: Number of periods when smoothing the ema, default to 10.
     :type smoothing_period: int
+    ...
+    :return: Returns a ndarray with calculated chaikin volatility prices.
+    :type: ndarray.float64
     """
     return cv_calc(highs, lows, period, smoothing_period)
 
