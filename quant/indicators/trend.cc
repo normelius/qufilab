@@ -142,7 +142,6 @@ py::array_t<double> dema_calc(const py::array_t<double> prices, const int period
     }
 
     return dema;
-
 }
 
 /*
@@ -175,7 +174,6 @@ py::array_t<double> tema_calc(const py::array_t<double> prices, const int period
     }
 
     return tema;
-
 }
 
 /*

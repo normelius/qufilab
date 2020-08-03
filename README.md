@@ -1,5 +1,10 @@
-    
-####WORK IN PROGRESS
+
+## Todo    
+1. Add requirements.txt and add it to setup.py
+
+
+
+
 
 ### Trend indicators - NEW IMPLEMENTATION
 [x] Simple Moving Average (SMA) [DONE]

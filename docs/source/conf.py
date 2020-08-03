@@ -33,15 +33,23 @@ author = 'Anton Normelius'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'numpydoc', 'sphinx.ext.linkcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'numpydoc', 
+        'sphinx.ext.extlinks']
 
-def linkcode_resolve(domain, info):
-    if domain != 'py':
-        return None
-    if not info['module']:
-        return None
-    filename = info['names'].replace('.', '/')
-    return "https://github.com/normelius/kvant/tree/master/quant/indicators/%s.py" % filename
+# External links to be used for urls to correct source code part on github.
+extlinks = {
+        'trend': ('https://github.com/normelius/kvant/blob/'\
+        'master/quant/indicators/trend.cc#%s', ''),
+        'momentum': ('https://github.com/normelius/kvant/blob/'\
+        'master/quant/indicators/momentum.cc#%s', ''),
+        'volatility': ('https://github.com/normelius/kvant/blob/'\
+        'master/quant/indicators/volatility.cc#%s', ''),
+        'volume': ('https://github.com/normelius/kvant/blob/'\
+        'master/quant/indicators/volume.cc#%s', ''),
+        'stat': ('https://github.com/normelius/kvant/blob/'\
+        'master/quant/indicators/stat.cc#%s', '')
+        }
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

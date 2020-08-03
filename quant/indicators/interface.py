@@ -32,8 +32,9 @@ def _validate_input(data = None, period = None):
 # ---------------
 def sma(data, period):
     """
-    Compute simple moving average with the specified period.
-    
+    Calculates the Simple Moving Average with the specified period. Source code 
+    and implementation can be found [:trend:`here<L30-L66>`].
+
     Parameters
     ----------
     data : `ndarray`
@@ -45,14 +46,20 @@ def sma(data, period):
     -------
     `ndarray`
         Returns a numpy ndarray of type float64 with simple moving averages.
+    
+    Examples
+    --------
+    >>> data = np.array([1, 2, 3, 4, 5])
+    >>> sma = quant.sma([1, 2, 3], 1)
+    [nan 1.5 2.5 3.5 4.5]
     """
     _validate_input(data = data, period = period)
-
     return sma_calc(data, period)
 
 def ema(data, period):
     """
-    Compute exponential moving average with the specified period.
+    Calculates the Exponential Moving Average with the specified period. Source code
+    and implementation can be found [:trend:`here<L77-L114>`].
     
     Parameters
     ----------
@@ -67,30 +74,167 @@ def ema(data, period):
         Returns a ndarray of type float64 with exponential moving averages.
     """
     _validate_input(data = data, period = period)
-
     return ema_calc(data, period)
 
 
-def dema(data, periods):
-    return dema_calc(data, periods)
+def dema(data, period):
+    """
+    Calculates the Double Exponential Moving Average with the specified period. 
+    Source code and implementation can be found [:trend:`here<L125-L145>`].
+    
+    Parameters
+    ----------
+    data : `ndarray`
+        Array of type float64 containing the data to be used.
+    period : `int`
+        Number of periods to be used.
+    
+    Returns
+    -------
+    `ndarray`
+        Returns a ndarray of type float64 with double exponential moving averages.
+    """
+    _validate_input(data = data, period = period)
+    return dema_calc(data, period)
 
-def tema(data, periods):
-    return tema_calc(data, periods)
+def tema(data, period):
+    """
+    Calculates the Triple Exponential Moving Average with the specified period. 
+    Source code and implementation can be found [:trend:`here<L155-L177>`].
+    
+    Parameters
+    ----------
+    data : `ndarray`
+        Array of type float64 containing the data to be used.
+    period : `int`
+        Number of periods to be used.
+    
+    Returns
+    -------
+    `ndarray`
+        Returns a ndarray of type float64 with triple exponential moving averages.
+    """
+    _validate_input(data = data, period = period)
+    return tema_calc(data, period)
 
-def t3(data, periods, volume_factor = 0.7):
-    return t3_calc(data, periods, volume_factor)
+def t3(data, period, volume_factor = 0.7):
+    """
+    Calcualtes the T3 Moving Average with the specified period. 
+    Source code and implementation can be found [:trend:`here<L199-L231>`].
+    
+    Parameters
+    ----------
+    data : `ndarray`
+        Array of type float64 containing the data to be used.
+    period : `int`
+        Number of periods to be used.
+    volume_factor : `float`
+        Volume factor to be used when calculating the constants.
+    
+    Returns
+    -------
+    `ndarray`
+        Returns a ndarray of type float64 with t3 moving averages.
+    """
+    _validate_input(data = data, period = period)
 
-def tma(data, periods):
-    return tma_calc(data, periods)
+    if volume_factor < 0:
+        raise ValueError("Param 'volume_factor' needs to be bigger than zero")
 
-def smma(data, periods):
-    return smma_calc(data, periods)
+    return t3_calc(data, period, volume_factor)
 
-def lwma(data, periods):
-    return lwma_calc(data, periods)
+def tma(data, period):
+    """
+    Calculates the Triangular Moving Average with the specified period. 
+    Source code and implementation can be found [:trend:`here<L250-L269>`].
+    
+    Parameters
+    ----------
+    data : `ndarray`
+        Array of type float64 containing the data to be used.
+    period : `int`
+        Number of periods to be used.
+    
+    Returns
+    -------
+    `ndarray`
+        Returns a ndarray of type float64 with triangular moving averages.
+    """
+    _validate_input(data = data, period = period)
+    return tma_calc(data, period)
 
-def wc(data, highs, lows):
-    return wc_calc(data, highs, lows)
+def smma(data, period):
+    """
+    Calculates the Smoothed Moving Average with the specified period. 
+    Source code and implementation can be found [:trend:`here<L283-L305>`].
+    
+    Parameters
+    ----------
+    data : `ndarray`
+        Array of type float64 containing the data to be used.
+    period : `int`
+        Number of periods to be used.
+    
+    Returns
+    -------
+    `ndarray`
+        Returns a ndarray of type float64 with triangular moving averages.
+    """
+    _validate_input(data = data, period = period)
+    return smma_calc(data, period)
+
+def lwma(data, period):
+    """
+    Calculates the Linear Weighted Moving Average with the specified period. 
+    Source code and implementation can be found [:trend:`here<L319-L343>`].
+    
+    Parameters
+    ----------
+    data : `ndarray`
+        Array of type float64 containing the data to be used.
+    period : `int`
+        Number of periods to be used.
+    
+    Returns
+    -------
+    `ndarray`
+        Returns a ndarray of type float64 with linear weighted moving averages.
+    """
+    _validate_input(data = data, period = period)
+    return lwma_calc(data, period)
+
+def wc(close, high, low):
+    """
+    Calculates the Weighted Close with the specified period. 
+    Source code and implementation can be found [:trend:`here<L354-L376>`].
+    
+    Parameters
+    ----------
+    close : `ndarray`
+        Array of type float64 containing the closing prices to be used.
+    high : `ndarray`
+        Array of type float64 containing the high prices to be used.
+    low : `ndarray`
+        Array of type float64 containing the low prices to be used.
+    
+    Returns
+    -------
+    `ndarray`
+        Returns a ndarray of type float64 with weighted close values.
+    """
+    if not isinstance(close, np.ndarray) or close.dtype != np.float64:
+        raise ValueError("Param 'close' needs to be of type numpy.ndarray with " \
+            "dtype numpy.float64, i.e. double")
+
+    if not isinstance(high, np.ndarray) or high.dtype != np.float64:
+        raise ValueError("Param 'high' needs to be of type numpy.ndarray with " \
+            "dtype numpy.float64, i.e. double")
+
+    if not isinstance(low, np.ndarray) or low.dtype != np.float64:
+        raise ValueError("Param 'low' needs to be of type numpy.ndarray with " \
+            "dtype numpy.float64, i.e. double")
+
+    return wc_calc(close, high, low)
 
 # Volatility interface
 # --------------------
