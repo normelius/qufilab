@@ -5,7 +5,7 @@ This section describes the available indicators and demonstrates the usage.
 Trend
 =====
 .. automodule:: quant
-    :members: sma, cv
+    :members: dema, ema, lwma, sma, smma, t3, tema, tma, wc
 
 Momentum
 ========
