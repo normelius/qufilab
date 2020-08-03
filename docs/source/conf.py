@@ -35,6 +35,13 @@ author = 'Anton Normelius'
 # ones.
 extensions = ['sphinx.ext.autodoc', 'numpydoc', 'sphinx.ext.linkcode']
 
+def linkcode_resolve(domain, info):
+    if domain != 'py':
+        return None
+    if not info['module']:
+        return None
+    filename = info['module'].replace('.', '/')
+    return "https://github.com/normelius/kvant/tree/master/quant/indicators/%s.py" % filename
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
