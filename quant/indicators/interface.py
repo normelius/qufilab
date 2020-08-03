@@ -29,7 +29,7 @@ def sma(data, period):
     
     Returns
     -------
-    list
+    sma : list
         Returns a numpy ndarray with calculated simple moving averages.
     """
     return sma_calc(data, period)
