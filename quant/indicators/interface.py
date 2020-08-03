@@ -82,9 +82,8 @@ def cv(highs, lows, period = 10, smoothing_period = 10):
     :type period: int
     :param smoothing_period: Number of periods when smoothing the ema, default to 10.
     :type smoothing_period: int
-    ...
     :return: Returns a ndarray with calculated chaikin volatility prices.
-    :type: ndarray.float64
+    :rtype: ndarray.float64
     """
     return cv_calc(highs, lows, period, smoothing_period)
 
