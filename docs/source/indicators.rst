@@ -4,7 +4,7 @@ This section describes the available indicators and demonstrates the usage.
 
 Trend
 =====
-.. automodule:: quant
+.. autofunction:: quant
     :members: sma, cv
 
 Momentum
