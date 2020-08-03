@@ -22,7 +22,7 @@ def sma(data, period):
     
     Parameters
     ----------
-    data : ndarray.float64: 
+    data : ndarray.float64
         Numpy array containing the data to be used.
     period : int
         Number of periods to be used.
