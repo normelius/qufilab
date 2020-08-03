@@ -18,11 +18,10 @@ from quant.indicators.stat import *
 # ---------------
 def sma(data, period):
     """
-    Compute trailing simple moving average with the specified period.
+    Compute simple moving average with the specified period.
     
     Parameters
     ----------
-
     data : `ndarray.float64`
         Numpy array containing the data to be used.
     period : `int`
@@ -35,8 +34,23 @@ def sma(data, period):
     """
     return sma_calc(data, period)
 
-def ema(data, periods):
-    return ema_calc(data, periods)
+def ema(data, period):
+    """
+    Compute exponential moving average with the specified period.
+    
+    Parameters
+    ----------
+    data : `ndarray.float64`
+        Numpy array containing the data to be used.
+    period : `int`
+        Number of periods to be used.
+    
+    Returns
+    -------
+    `ndarray.float64`
+        Returns a numpy ndarray with calculated simple moving averages.
+    """
+    return ema_calc(data, period)
 
 def dema(data, periods):
     return dema_calc(data, periods)
