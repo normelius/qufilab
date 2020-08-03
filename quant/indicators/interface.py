@@ -16,8 +16,23 @@ from quant.indicators.stat import *
 
 # Trend interface
 # ---------------
-def sma(data, periods, ):
-    return sma_calc(data, periods)
+def sma(data, period):
+    """
+    Compute trailing simple moving average with the specified period.
+
+    Parameters
+    ----------
+    data : ndarray.float64
+        Numpy array containing the data to be used.
+    period : int 
+        Number of periods to be used.
+
+    Returns
+    -------
+    ndarray.float64
+        Returns a numpy ndarray with calculated simple moving averages.
+    """
+    return sma_calc(data, period)
 
 def ema(data, periods):
     return ema_calc(data, periods)
@@ -59,14 +74,14 @@ def cv(highs, lows, period = 10, smoothing_period = 10):
     """ 
     Chaikin Volatility
 
-    :param highs: High values.
-    :type highs: list.
-    :param lows: Low values.
-    :type lows: list.
+    :param highs: High values
+    :type highs: ndarray
+    :param lows: Low values
+    :type lows: ndarray
     :param period: Number of periods when calculating the ema, default to 10.
-    :type period: int (Chaikin recommends 10)
+    :type period: int
     :param smoothing_period: Number of periods when smoothing the ema, default to 10.
-    :type smoothing_period: int (Chaikin recommends 10).
+    :type smoothing_period: int
     """
     return cv_calc(highs, lows, period, smoothing_period)
 
