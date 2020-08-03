@@ -40,7 +40,7 @@ def linkcode_resolve(domain, info):
         return None
     if not info['module']:
         return None
-    filename = info['module'].replace('.', '/')
+    filename = info['names'].replace('.', '/')
     return "https://github.com/normelius/kvant/tree/master/quant/indicators/%s.py" % filename
 
 # Add any paths that contain templates here, relative to this directory.
