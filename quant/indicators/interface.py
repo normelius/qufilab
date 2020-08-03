@@ -50,7 +50,7 @@ def sma(data, period):
     Examples
     --------
     >>> data = np.array([1, 2, 3, 4, 5])
-    >>> sma = quant.sma([1, 2, 3], 1)
+    >>> sma = quant.sma(data, 1)
     [nan 1.5 2.5 3.5 4.5]
     """
     _validate_input(data = data, period = period)
