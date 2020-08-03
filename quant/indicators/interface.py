@@ -22,14 +22,14 @@ def sma(data, period):
     
     Parameters
     ----------
-    data : ndarray.float64
+    data : list
         Numpy array containing the data to be used.
     period : int
         Number of periods to be used.
     
     Returns
     -------
-    ndarray.float64
+    list
         Returns a numpy ndarray with calculated simple moving averages.
     """
     return sma_calc(data, period)
