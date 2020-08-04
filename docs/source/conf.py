@@ -44,7 +44,7 @@ def linkcode_resolve(domain, info):
             data = yaml.safe_load(stream)
             for indicator_type, indicators in data.items():
                 if fullname in indicators:
-                    filename = "../qufilab/indicators/"+indicator_type+".cc"
+                    filename = ".../qufilab/indicators/"+indicator_type+".cc"
                     break
 
         except yaml.YAMLError as exc:
