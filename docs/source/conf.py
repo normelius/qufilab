@@ -1,6 +1,7 @@
 import os
 import sys
 import mock
+import yaml
 sys.path.insert(0, os.path.abspath('../..'))
 #import sphinx_rtd_theme
 
@@ -22,7 +23,57 @@ author = 'Anton Normelius'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'numpydoc', 
-        'sphinx.ext.extlinks']
+        'sphinx.ext.extlinks', 'sphinx.ext.linkcode']
+
+
+def linkcode_resolve(domain, info):
+    if domain != 'py':
+        return None
+
+    if not info['module']:
+        return None
+
+    # Fullname contains the actual function that were called,
+    # for example 'sma' in interface.py.
+    fullname = info['fullname']
+
+    # Parse indicators.yaml to find what script the implementation of 
+    # fullname is in.
+    with open("../indicators.yaml", "r") as stream:
+        try:
+            data = yaml.safe_load(stream)
+            for indicator_type, indicators in data.items():
+                if fullname in indicators:
+                    filename = "../qufilab/indicators/"+indicator_type+".cc"
+                    break
+
+        except yaml.YAMLError as exc:
+            print(exc)
+    
+    # Open implementation file and check each line for start and end of implementation
+    # Start is given by "Implementation of SMA" for example, and end is given by
+    # "return sma", for example.
+    with open(filename, 'r') as obj:
+        line_start = "Implementation of " + fullname.upper()
+        line_end = "return " + fullname
+        
+        lineno_start = 0
+        lineno_end = 0
+
+        for lineno, line in enumerate(obj):
+            if line_start in line:
+                lineno_start = lineno
+
+            if line_end  in line:
+                lineno_end = lineno + 2
+                break
+    
+    github_url = 'https://github.com/normelius/qufilab/blob/master/' \
+            'qufilab/indicators/{}.cc#L{}-#L{}'.format(indicator_type,
+                    lineno_start, lineno_end)
+
+    return github_url
+
 
 # External links to be used for urls to correct source code part on github.
 extlinks = {

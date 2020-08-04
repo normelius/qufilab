@@ -22,7 +22,8 @@
 namespace py = pybind11;
 
 /*
-    SMA (Simple Moving Average)
+    Implementation of SMA.
+    Simple Moving Average.
 
     @param prices (py::array_t<double>): Array with prices.
     @param periods (int): Number of periods.
@@ -67,8 +68,9 @@ py::array_t<double> sma_calc(const py::array_t<double> price, const int period) 
 
 
 /*
-    EMA
+    Implementation of EMA.
     Exponential Moving Average
+
     Math: (close - ema(prev)) * k + ema(prev)
 
     @param prices (vector<double>): Vector with prices.
@@ -115,8 +117,9 @@ py::array_t<double> ema_calc(const py::array_t<double> prices, const int periods
 
 
 /*
-    DEMA
+    Implementation of DEMA.
     Double Exponential Moving Average
+
     Math: DEMA = 2 * EMA_N - EMA(EMA_N).
 
     @param prices (py::array_t<double>): Array with prices.
@@ -145,7 +148,7 @@ py::array_t<double> dema_calc(const py::array_t<double> prices, const int period
 }
 
 /*
-    TEMA
+    Implementation of TEMA.
     Triple Exponential Moving Average
     Math: TEMA = (3* EMA_1) - (3 * EMA_2) + EMA_3.
 
@@ -177,7 +180,7 @@ py::array_t<double> tema_calc(const py::array_t<double> prices, const int period
 }
 
 /*
-    T3
+    Implementation of T3.
     T3 Moving Average.
 
     Math: T3 = c1*e6 + c2*e5 + c3*e4 + c4*e3.
@@ -232,7 +235,9 @@ py::array_t<double> t3_calc(const py::array_t<double> prices, const int periods,
 
 
 /*
+    Implementation of T3.
     Triangular Moving Average
+
     Math: 
         If period is even: first_period = period / 2.
                            second_period = (period / 2) + 1.
@@ -269,8 +274,9 @@ py::array_t<double> tma_calc(const py::array_t<double> prices, const int period)
 }
 
 /*
-    SMMA
-    Smoothed Moving Average
+    Implementation of SMMA.
+    Smoothed Moving Average.
+
     Math: 
         1. First value = sma.
         2. SMMA(i) = (SMMA1(i - 1) * (periods - 1) + prices(i)) / periods.
@@ -306,15 +312,16 @@ py::array_t<double> smma_calc(const py::array_t<double> prices, const int period
 
 
 /*
-   LWMA
-   Linear Weighted Moving Average
-Math: LWMA = sum(prices[i] * W(i)) / sum(W),
-where W are the weights, ranging from 1-periods.
+    Implementation of LWMA.
+    Linear Weighted Moving Average
 
-@param prices (vector<double>): Vector with prices.
-@param periods (int): Number of periods.
-@param defualt_size (int): Specify whether the returned vector
-should be the default size with NaNs or not.
+    Math: LWMA = sum(prices[i] * W(i)) / sum(W),
+    where W are the weights, ranging from 1-periods.
+
+    @param prices (vector<double>): Vector with prices.
+    @param periods (int): Number of periods.
+    @param defualt_size (int): Specify whether the returned vector
+        should be the default size with NaNs or not.
 */
 py::array_t<double> lwma_calc(const py::array_t<double> prices, const int periods) {
 
@@ -343,8 +350,9 @@ py::array_t<double> lwma_calc(const py::array_t<double> prices, const int period
 }
 
 /*
-    WC
-    Weighted Close
+    Implementation of WC.
+    Weighted Close.
+
     Math: wc[i] = ((close * 2) + high + low) / 4,
 
     @param prices (vector<double>): Vector with closing prices.

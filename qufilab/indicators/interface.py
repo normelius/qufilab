@@ -238,8 +238,8 @@ def wc(close, high, low):
 
 # Volatility interface
 # --------------------
-def bbands(data, periods, deviation = 2):
-    return bbands_calc(data, periods, deviation)
+def bbands(data, period, deviation = 2):
+    return bbands_calc(data, period, deviation)
 
 def kc(close, high, low, period = 20, period_atr = 20, deviation = 2):
     return kc_calc(close, high, low, period, period_atr, deviation)
