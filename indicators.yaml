@@ -1,0 +1,14 @@
+
+
+
+trend:
+    - sma
+    - ema
+    - dema
+    - tema
+    - t3
+    - tma
+    - smma
+    - lwma
+    - wc
+
