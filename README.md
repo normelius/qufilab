@@ -7,4 +7,4 @@
 $ pip3 install qufilab
 ```
 
-Documentation can be found at: <https://kvant.readthedocs.io>
+Documentation can be found at: <https://qufilab.readthedocs.io>
