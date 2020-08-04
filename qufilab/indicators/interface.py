@@ -1,5 +1,5 @@
 """
-@ Quant, 2020.
+@ Qufilab, 2020.
 @ Anton Normelius
 
 Python interface for available indicators.
@@ -8,11 +8,11 @@ Python interface for available indicators.
 import time
 import numpy as np 
 
-from quant.indicators.trend import *
-from quant.indicators.volatility import *
-from quant.indicators.momentum import *
-from quant.indicators.volume import *
-from quant.indicators.stat import *
+from qufilab.indicators.trend import *
+from qufilab.indicators.volatility import *
+from qufilab.indicators.momentum import *
+from qufilab.indicators.volume import *
+from qufilab.indicators.stat import *
 
 def _validate_input(data = None, period = None):
     """
@@ -50,7 +50,7 @@ def sma(data, period):
     Examples
     --------
     >>> data = np.array([1, 2, 3, 4, 5])
-    >>> sma = quant.sma(data, 1)
+    >>> sma = qufilab.sma(data, 1)
     [nan 1.5 2.5 3.5 4.5]
     """
     _validate_input(data = data, period = period)

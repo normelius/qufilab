@@ -23,7 +23,7 @@ autodoc_mock_imports = ['pandas', 'numpy', 'pybind11',
 
 # -- Project information -----------------------------------------------------
 
-project = 'kvant'
+project = 'qufilab'
 copyright = '2020, Anton Normelius'
 author = 'Anton Normelius'
 
@@ -38,15 +38,15 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'numpydoc',
 
 # External links to be used for urls to correct source code part on github.
 extlinks = {
-        'trend': ('https://github.com/normelius/kvant/blob/'\
+        'trend': ('https://github.com/normelius/qufilab/blob/'\
         'master/quant/indicators/trend.cc#%s', ''),
-        'momentum': ('https://github.com/normelius/kvant/blob/'\
+        'momentum': ('https://github.com/normelius/qufilab/blob/'\
         'master/quant/indicators/momentum.cc#%s', ''),
-        'volatility': ('https://github.com/normelius/kvant/blob/'\
+        'volatility': ('https://github.com/normelius/qufilab/blob/'\
         'master/quant/indicators/volatility.cc#%s', ''),
-        'volume': ('https://github.com/normelius/kvant/blob/'\
+        'volume': ('https://github.com/normelius/qufilab/blob/'\
         'master/quant/indicators/volume.cc#%s', ''),
-        'stat': ('https://github.com/normelius/kvant/blob/'\
+        'stat': ('https://github.com/normelius/qufilab/blob/'\
         'master/quant/indicators/stat.cc#%s', '')
         }
 

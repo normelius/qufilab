@@ -49,7 +49,8 @@ def cpp_flag(compiler):
     """Return the -std=c++[11/14/17] compiler flag.
     The newer version is prefered over c++11 (when it is available).
     """
-    flags = ['-std=c++17', '-std=c++14', '-std=c++11']
+    #flags = ['-std=c++17', '-std=c++14', '-std=c++11']
+    flags = ['-std=c++11']
 
     for flag in flags:
         if has_flag(compiler, flag):
@@ -92,7 +93,7 @@ class BuildExt(build_ext):
 
 """
 Each individual extension, i.e. .so file that needs to be compiled and created
-in order for the quant package to successfully import these files needs to be
+in order for the qufilab package to successfully import these files needs to be
 included below.
 Each extension needs to have it's included source files, i.e. .cc files (check
 implementation and see which files needs to be included).
@@ -105,11 +106,11 @@ depends on functions from the trend source file.
 ext_modules = [
     # Models extension
     Extension(
-        'quant.models',
-        sorted(['quant/models.cc',
-            'quant/common/time.cc', 
-            'quant/indicators/volatility.cc',
-            'quant/indicators/trend.cc']),
+        'qufilab.models',
+        sorted(['qufilab/models.cc',
+            'qufilab/common/time.cc', 
+            'qufilab/indicators/volatility.cc',
+            'qufilab/indicators/trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
@@ -117,8 +118,8 @@ ext_modules = [
     ),
     # Trend extension
     Extension(
-        'quant.indicators.trend',
-        sorted(['quant/indicators/trend.cc']),
+        'qufilab.indicators.trend',
+        sorted(['qufilab/indicators/trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
@@ -126,10 +127,10 @@ ext_modules = [
     ),
     # Volatility extension
     Extension(
-        'quant.indicators.volatility',
-        sorted(['quant/indicators/volatility.cc',
-            'quant/indicators/trend.cc',
-            'quant/indicators/stat.cc']),
+        'qufilab.indicators.volatility',
+        sorted(['qufilab/indicators/volatility.cc',
+            'qufilab/indicators/trend.cc',
+            'qufilab/indicators/stat.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
@@ -137,9 +138,9 @@ ext_modules = [
     ),
     # Momentum extension
     Extension(
-        'quant.indicators.momentum',
-        sorted(['quant/indicators/momentum.cc',
-            'quant/indicators/trend.cc']),
+        'qufilab.indicators.momentum',
+        sorted(['qufilab/indicators/momentum.cc',
+            'qufilab/indicators/trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
@@ -147,9 +148,9 @@ ext_modules = [
     ),
     # Volume extension
     Extension(
-        'quant.indicators.volume',
-        sorted(['quant/indicators/volume.cc',
-            'quant/indicators/trend.cc']),
+        'qufilab.indicators.volume',
+        sorted(['qufilab/indicators/volume.cc',
+            'qufilab/indicators/trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
@@ -157,9 +158,9 @@ ext_modules = [
     ),
     # Stat extension
     Extension(
-        'quant.indicators.stat',
-        sorted(['quant/indicators/stat.cc',
-            'quant/indicators/trend.cc']),
+        'qufilab.indicators.stat',
+        sorted(['qufilab/indicators/stat.cc',
+            'qufilab/indicators/trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
@@ -167,10 +168,10 @@ ext_modules = [
     ),
 ]
 
-PACKAGES = ['quant']
+PACKAGES = ['qufilab']
 
 setup(
-    name="quant",
+    name="qufilab",
     author="Anton Normelius",
     author_email="a.normelius@gmail.com",
     packages=find_packages(),
