@@ -7,9 +7,9 @@ sys.path.insert(0, os.path.abspath('../..'))
 #import sphinx_rtd_theme
 
 autodoc_mock_imports = ['pandas', 'numpy', 'pybind11', 
-        'qufilab.indicators.trend', 'qufilab.indicators.volume',
-        'qufilab.indicators.stat', 'qufilab.indicators.volatility',
-        'qufilab.indicators.momentum']
+        'qufilab.indicators.trend.so', 'qufilab.indicators.volume.so',
+        'qufilab.indicators.stat.so', 'qufilab.indicators.volatility.so',
+        'qufilab.indicators.momentum.so']
 
 # -- Project information -----------------------------------------------------
 
