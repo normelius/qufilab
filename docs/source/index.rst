@@ -1,5 +1,5 @@
-Kvant
-=====
+QufiLab
+=======
 
 .. toctree::
    :maxdepth: 1
