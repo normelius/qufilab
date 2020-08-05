@@ -3,6 +3,10 @@ import os
 import sys
 import mock
 import yaml
+import re
+from bs4 import BeautifulSoup as bs
+import requests
+
 sys.path.insert(0, os.path.abspath('../..'))
 #import sphinx_rtd_theme
 
@@ -24,7 +28,7 @@ author = 'Anton Normelius'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'numpydoc', 
-        'sphinx.ext.extlinks']
+        'sphinx.ext.extlinks', 'sphinx.ext.linkcode']
 
 
 def linkcode_resolve(domain, info):
@@ -40,7 +44,7 @@ def linkcode_resolve(domain, info):
     
     # Parse indicators.yaml to find what script the implementation of 
     # fullname is in.
-    with open("indicators.yaml", "r") as stream:
+    with open("source/indicators.yaml", "r") as stream:
         try:
             data = yaml.safe_load(stream)
             for indicator_type, indicators in data.items():
@@ -54,26 +58,23 @@ def linkcode_resolve(domain, info):
     # Open implementation file and check each line for start and end of implementation
     # Start is given by "Implementation of SMA" for example, and end is given by
     # "return sma", for example.
-    with open(filename, 'r') as obj:
-        line_start = "Implementation of " + fullname.upper()
-        line_end = "return " + fullname
-        
-        lineno_start = 0
-        lineno_end = 0
-
-        for lineno, line in enumerate(obj):
-            if line_start in line:
-                lineno_start = lineno
-
-            if line_end  in line:
-                lineno_end = lineno + 2
-                break
+    github_url = "https://github.com/normelius/qufilab/blob/master/qufilab/" \
+            "indicators/{}.cc".format(indicator_type)
     
-    github_url = 'https://github.com/normelius/qufilab/blob/master/' \
-            'qufilab/indicators/{}.cc#L{}-#L{}'.format(indicator_type,
-                    lineno_start, lineno_end)
+    r = requests.get(github_url)
+    soup = bs(r.text, 'html.parser')
+    text_parse = "Implementation of " + fullname.upper()
+    try:
+        line = soup.findAll('td', text = re.compile(text_parse))[0].get('id')
+        lineno = re.sub('[C]', '', line)
 
-    return github_url
+    except:
+        lineno = 1
+
+    url = 'https://github.com/normelius/qufilab/blob/master/' \
+            'qufilab/indicators/{}.cc#{}'.format(indicator_type,
+                    lineno)
+    return url
 
 
 # External links to be used for urls to correct source code part on github.

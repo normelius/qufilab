@@ -235,7 +235,7 @@ py::array_t<double> t3_calc(const py::array_t<double> prices, const int periods,
 
 
 /*
-    Implementation of T3.
+    Implementation of TMA.
     Triangular Moving Average
 
     Math: 
@@ -382,7 +382,6 @@ py::array_t<double> wc_calc(const py::array_t<double> closes, const py::array_t<
 
     return wc;
 }
-
 
 
 PYBIND11_MODULE(trend, m) {
