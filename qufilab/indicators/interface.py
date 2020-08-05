@@ -32,7 +32,7 @@ def _validate_input(data = None, period = None):
 # ---------------
 def sma(data, period):
     """
-    Calculates the Simple Moving Average with the specified period.
+    Simple moving average
 
     Parameters
     ----------
@@ -67,7 +67,7 @@ def sma(data, period):
 
 def ema(data, period):
     """
-    Calculates the Exponential Moving Average with the specified period. 
+    Exponential moving average
     
     Parameters
     ----------
@@ -110,7 +110,7 @@ def ema(data, period):
 
 def dema(data, period):
     """
-    Calculates the Double Exponential Moving Average with the specified period. 
+    Double exponential moving average
     
     Parameters
     ----------
@@ -146,8 +146,8 @@ def dema(data, period):
 
 def tema(data, period):
     """
-    Calculates the Triple Exponential Moving Average with the specified period. 
-    
+    Triple exponential moving average
+
     Parameters
     ----------
     data : `ndarray`
@@ -180,9 +180,8 @@ def tema(data, period):
 
 def t3(data, period, volume_factor = 0.7):
     """
-    The t3 indicator is a weighted sum of many different exponential moving 
-    averages and hence becomes smoother than ordinary moving averages.
-    
+    T3 moving average
+
     Parameters
     ----------
     data : `ndarray`
@@ -245,8 +244,8 @@ def t3(data, period, volume_factor = 0.7):
 
 def tma(data, period):
     """
-    Calculates the triangular moving average with the specified period. 
-    
+    Triangular moving average
+
     Parameters
     ----------
     data : `ndarray`
@@ -292,8 +291,7 @@ def tma(data, period):
 
 def smma(data, period):
     """
-    Calculates the Smoothed Moving Average with the specified period. 
-    Source code and implementation can be found [:trend:`here<L283-L305>`].
+    Smoothed moving average
     
     Parameters
     ----------
@@ -312,8 +310,8 @@ def smma(data, period):
 
 def lwma(data, period):
     """
-    Calculates the Linear Weighted Moving Average with the specified period. 
-    
+    Linear weighted moving average
+
     Parameters
     ----------
     data : `ndarray`
@@ -351,8 +349,7 @@ def lwma(data, period):
 
 def wc(close, high, low):
     """
-    Calculates the Weighted Close with the specified period. 
-    Source code and implementation can be found [:trend:`here<L354-L376>`].
+    Weighted close
     
     Parameters
     ----------
@@ -405,7 +402,6 @@ def bbands(data, period, deviation = 2):
 
 def kc(close, high, low, period = 20, period_atr = 20, deviation = 2):
     return kc_calc(close, high, low, period, period_atr, deviation)
-
 
 def atr(prices, highs, lows, periods):
     return atr_calc(prices, highs, lows, periods)

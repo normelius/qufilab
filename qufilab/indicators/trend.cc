@@ -241,7 +241,7 @@ py::array_t<double> t3_calc(const py::array_t<double> prices, const int periods,
     Math: 
         If period is even: first_period = period / 2.
                            second_period = (period / 2) + 1.
-        If period is uneven: first_period = second_period = (period+1)/2 ronded up.
+        If period is uneven: first_period = second_period = (period+1)/2 rounded up.
 
         TMA = SMA(SMA(price, first_period), second_period)
     
