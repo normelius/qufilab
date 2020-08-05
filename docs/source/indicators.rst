@@ -1,6 +1,12 @@
 Indicators
 ==========
-This section describes the available indicators and demonstrates the usage.
+
+.. warning::
+    All of qufilab's technical indicators are implemented in c++ and a 
+    big part of the speed performance comes from the fact that no 
+    type conversion exist between python and c++. In order for this to work, 
+    numpy ndarrays of type **float64** are used in the implementation, 
+    and hence no other types of arrays/list are currently supported.
 
 .. currentmodule:: qufilab
 

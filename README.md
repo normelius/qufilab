@@ -14,9 +14,9 @@ $ pip3 install qufilab
 ## Usage
 > **WARNING**: All of qufilab's technical indicators are implemented in c++
 and a big part of the speed performance comes from the fact that no 
-type conversions exist between python and c++. In order for this to work, 
+type conversion exist between python and c++. In order for this to work, 
 **numpy ndarrays of type float64** are used in the implementation, and hence no other 
-types of arrays/list are currently supported.
+types of arrays/lists are currently supported.
 
 Documentation for all indicators can be found at: <https://qufilab.readthedocs.io>
 

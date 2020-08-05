@@ -12,6 +12,7 @@
 #include <sstream>
 #include <limits>
 #include <numeric>
+#include <type_traits>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
@@ -65,6 +66,61 @@ py::array_t<double> sma_calc(const py::array_t<double> price, const int period) 
 
     return sma;
 }
+
+
+template <typename T>
+T sma_calc_test(T price, const int period) {
+    auto buf = py::array::ensure(price);
+
+    using type = double;
+    
+    if (py::isinstance<py::array_t<double>>(buf)) {
+        std::cout << "Have double: " << buf.dtype() << std::endl;
+        using type = double;
+    }
+
+    else if (py::isinstance<py::array_t<float>>(buf)) {
+        std::cout << "Have float: " << buf.dtype() << std::endl;
+        using type = float;
+    }
+
+    py::buffer_info price_buf = price.request();
+    type *price_ptr = (type *) price_buf.ptr;
+    const int size = price_buf.shape[0];
+
+    py::array_t<type> sma = py::array_t<type>(price_buf.size);
+    type *sma_ptr = (type *) sma.request().ptr;
+    init_nan(sma_ptr, size);
+
+    // Check leading NaNs and adjust calculation below. This is needed if arg prices contain
+    // leading NaNs, which will occur when calculating other indicators.
+    int adjust_nan = 0;
+    for (int idx = 0; idx < size; ++idx) {
+        if (std::isnan(price_ptr[idx])) {
+            ++adjust_nan;
+        }
+
+        else {
+            break;
+        }
+    }
+
+    type temp = 0;
+    for (int idx = 0 + adjust_nan; idx < size; ++idx) {
+        temp += price_ptr[idx]; 
+
+        if (idx >= period + adjust_nan) {
+            temp -= price_ptr[idx - period];
+        }   
+
+        if (idx >= (period - 1 + adjust_nan)) {
+            sma_ptr[idx] = ((type) temp / period);
+        }
+    }
+
+    return sma;
+}
+
 
 
 /*
@@ -386,6 +442,11 @@ py::array_t<double> wc_calc(const py::array_t<double> closes, const py::array_t<
 
 PYBIND11_MODULE(trend, m) {
     m.def("sma_calc", &sma_calc, "Simple Moving Average");
+
+    m.def("sma_calc_test", &sma_calc_test<py::array_t<double>>, "Simple Moving Average");
+    m.def("sma_calc_test", &sma_calc_test<py::array_t<float>>, "Simple Moving Average");
+    m.def("sma_calc_test", &sma_calc_test<py::array_t<int>>, "Simple Moving Average");
+
     m.def("ema_calc", &ema_calc, "Exponential Moving Average");
     m.def("dema_calc", &dema_calc, "Double Exponential Moving Average");
     m.def("tema_calc", &tema_calc, "Triple Exponential Moving Average");

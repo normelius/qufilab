@@ -13,4 +13,10 @@ QufiLab
 
    indicators
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Extra   
+
+   maintainers
+
 

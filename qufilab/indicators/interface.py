@@ -62,8 +62,11 @@ def sma(data, period):
         \\frac{1}{n}\sum_{i=0}^{n-1} price_{K-i}
         
     """
-    _validate_input(data = data, period = period)
+    #_validate_input(data = data, period = period)
     return sma_calc(data, period)
+
+def sma_test(data, period):
+    return sma_calc_test(data, period)
 
 def ema(data, period):
     """
