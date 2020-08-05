@@ -28,9 +28,10 @@ author = 'Anton Normelius'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'numpydoc', 
-        'sphinx.ext.extlinks', 'sphinx.ext.linkcode']
+        'sphinx.ext.extlinks']
 
-
+# Uncomment line below if source should be included. 
+#extensions.append('sphinx.ext.linkcode')
 def linkcode_resolve(domain, info):
     if domain != 'py':
         return None
@@ -115,3 +116,6 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_css_files = [
+    'custom.css',
+]
