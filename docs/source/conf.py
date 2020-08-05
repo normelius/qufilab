@@ -44,7 +44,7 @@ def linkcode_resolve(domain, info):
     
     # Parse indicators.yaml to find what script the implementation of 
     # fullname is in.
-    with open("source/indicators.yaml", "r") as stream:
+    with open("indicators.yaml", "r") as stream:
         try:
             data = yaml.safe_load(stream)
             for indicator_type, indicators in data.items():
