@@ -8,7 +8,7 @@ utilizing the performance given by c++.
 
 ## Installation
 ```bash
-$ pip3 install qufilab
+Not yet implemented
 ```
 
 ## Usage

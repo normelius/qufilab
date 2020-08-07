@@ -401,68 +401,98 @@ def wc(close, high, low):
 # Volatility interface
 # --------------------
 def bbands(data, period, deviation = 2):
+    """
+    Bollinger bands
+    """
     return bbands_calc(data, period, deviation)
 
 def kc(close, high, low, period = 20, period_atr = 20, deviation = 2):
+    """
+    Keltner channels
+    """
     return kc_calc(close, high, low, period, period_atr, deviation)
 
 def atr(prices, highs, lows, periods):
+    """
+    Average true range
+    """
     return atr_calc(prices, highs, lows, periods)
 
 def cv(highs, lows, period = 10, smoothing_period = 10):
     """ 
-    Chaikin Volatility
-
-    :param highs: High values
-    :type highs: ndarray
-    :param lows: Low values
-    :type lows: ndarray
-    :param period: Number of periods when calculating the ema, default to 10.
-    :type period: int
-    :param smoothing_period: Number of periods when smoothing the ema, default to 10.
-    :type smoothing_period: int
-    :return: Returns a ndarray with calculated chaikin volatility prices.
-    :rtype: ndarray.float64
+    Chaikin volatility
     """
     return cv_calc(highs, lows, period, smoothing_period)
 
 # Momentum interface
 # -----------------
 def rsi(data, periods, rsi_type = "smoothed"):
+    """
+    Relative strength index
+    """
     return rsi_calc(data, periods, rsi_type.lower())
 
 def macd(data):
+    """
+    Macd
+    """
     return macd_calc(data)
 
 def willr(data, highs, lows, periods):
+    """
+    William's R
+    """
     return willr_calc(data, highs, lows, periods)
 
-def roc(data, periods):
-    return roc_calc(data, periods)
+def roc(data, period):
+    """
+    Price rate of change
+    """
+    return roc_calc(data, period)
 
 def vpt(data, volumes):
+    """
+    Volume price trend
+    """
     return vpt_calc(data, volumes)
 
 def mi(data, periods):
+    """
+    Momentum indicator
+    """
     return mi_calc(data, periods)
 
 def apo(data, period_slow = 26, period_fast = 12, ma = "sma"):
-    
+    """
+    Absolute price oscillator
+    """
     if ma.lower() not in ["sma", "ema"]:
         raise ValueError("param 'ma' needs to be 'ema' or 'sma'")
 
     return apo_calc(data, period_slow, period_fast, ma.lower())
 
 def bop(high, low, open_, close):
+    """
+    Balance of power
+    """
     return bop_calc(high, low, open_, close)
 
 def cmo(close, period):
+    """
+    Chande momentum indicator
+    """
     return cmo_calc(close, period)
 
 def mfi(high, low, close, volume, period):
+    """
+    Money flow index
+    """
     return mfi_calc(high, low, close, volume, period)
 
 def ppo(prices, period_fast = 12, period_slow = 26, ma_type = "ema"):
+    """
+    Percentage price oscillator
+    """
     if ma_type.lower() not in ["sma", "ema"]:
         raise ValueError("Param 'ma_type' needs to be 'sma' or 'ema'")
 
