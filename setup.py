@@ -9,23 +9,34 @@ from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
+NAME = "qufilab"
+AUTHOR = "Anton Normelius"
+EMAIL = "a.normelius@gmail.com"
+URL = "https://github.com/normelius/qufilab"
+
+
+# Read readme.
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+# Read requirements.
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
 
 class get_pybind_include(object):
-    """Helper class to determine the pybind11 include path
+    """
+    Helper class to determine the pybind11 include path
     The purpose of this class is to postpone importing pybind11
     until it is actually installed, so that the ``get_include()``
-    method can be invoked. """
-
+    method can be invoked.
+    """
     def __str__(self):
         import pybind11
         return pybind11.get_include()
 
-
-
-
-# cf http://bugs.python.org/issue26689
 def has_flag(compiler, flagname):
-    """Return a boolean indicating whether a flag name is supported on
+    """
+    Return a boolean indicating whether a flag name is supported on
     the specified compiler.
     """
     import tempfile
@@ -171,10 +182,14 @@ ext_modules = [
 PACKAGES = ['qufilab']
 
 setup(
-    name="qufilab",
-    author="Anton Normelius",
-    author_email="a.normelius@gmail.com",
+    name=NAME,
+    author=AUTHOR,
+    author_email=EMAIL,
+    url=URL,
     packages=find_packages(),
+    install_requires=required,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
