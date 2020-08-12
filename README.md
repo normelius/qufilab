@@ -10,19 +10,19 @@ utilizing the performance given by c++.
 ```bash
 Not yet implemented
 ```
+Documentation for QufiLab can be found at: <https://qufilab.readthedocs.io>
 
 ## Usage
 > **WARNING**: All of qufilab's technical indicators are implemented in c++
 and a big part of the speed performance comes from the fact that no 
 type conversion exist between python and c++. In order for this to work, 
-**numpy ndarrays of type float64** are used in the implementation, and hence no other 
-types of arrays/lists are currently supported.
-
-Documentation for all indicators can be found at: <https://qufilab.readthedocs.io>
+**numpy arraysof type float64 (double) and float32 (float)** are used in the implementation, 
+and hence no other types of arrays/lists are currently supported.
 
 #### Indicators
 ```python
 import qufilab as ql
+import numpy as np
 
 # Creates an ndarray with element type float64.
 data = np.random.rand(1000000)
