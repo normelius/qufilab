@@ -29,13 +29,14 @@ namespace py = pybind11;
     @param prices (py::array_t<double>): Array with prices.
     @param periods (int): Number of periods.
  */
-py::array_t<double> sma_calc(const py::array_t<double> price, const int period) {
+template <typename T>
+py::array_t<T> sma_calc(const py::array_t<T> price, const int period) {
     py::buffer_info price_buf = price.request();
-    double *price_ptr = (double *) price_buf.ptr;
+    T *price_ptr = (T*) price_buf.ptr;
     const int size = price_buf.shape[0];
 
-    py::array_t<double> sma = py::array_t<double>(price_buf.size);
-    double *sma_ptr = (double *) sma.request().ptr;
+    py::array_t<T> sma = py::array_t<T>(price_buf.size);
+    T *sma_ptr = (T*) sma.request().ptr;
     init_nan(sma_ptr, size);
 
     // Check leading NaNs and adjust calculation below. This is needed if arg prices contain
@@ -51,7 +52,7 @@ py::array_t<double> sma_calc(const py::array_t<double> price, const int period) 
         }
     }
 
-    double temp = 0;
+    T temp = 0;
     for (int idx = 0 + adjust_nan; idx < size; ++idx) {
         temp += price_ptr[idx]; 
 
@@ -60,7 +61,7 @@ py::array_t<double> sma_calc(const py::array_t<double> price, const int period) 
         }   
 
         if (idx >= (period - 1 + adjust_nan)) {
-            sma_ptr[idx] = ((double) temp / period);
+            sma_ptr[idx] = ((T) temp / period);
         }
     }
 
@@ -69,27 +70,14 @@ py::array_t<double> sma_calc(const py::array_t<double> price, const int period) 
 
 
 template <typename T>
-T sma_calc_test(T price, const int period) {
-    auto buf = py::array::ensure(price);
-
-    using type = double;
-    
-    if (py::isinstance<py::array_t<double>>(buf)) {
-        std::cout << "Have double: " << buf.dtype() << std::endl;
-        using type = double;
-    }
-
-    else if (py::isinstance<py::array_t<float>>(buf)) {
-        std::cout << "Have float: " << buf.dtype() << std::endl;
-        using type = float;
-    }
+py::array_t<T> sma_calc_test(py::array_t<T> price, const int period) {
 
     py::buffer_info price_buf = price.request();
-    type *price_ptr = (type *) price_buf.ptr;
+    T* price_ptr = (T*) price_buf.ptr;
     const int size = price_buf.shape[0];
 
-    py::array_t<type> sma = py::array_t<type>(price_buf.size);
-    type *sma_ptr = (type *) sma.request().ptr;
+    py::array_t<T> sma = py::array_t<T>(price_buf.size);
+    T* sma_ptr = (T*) sma.request().ptr;
     init_nan(sma_ptr, size);
 
     // Check leading NaNs and adjust calculation below. This is needed if arg prices contain
@@ -105,7 +93,7 @@ T sma_calc_test(T price, const int period) {
         }
     }
 
-    type temp = 0;
+    T temp = 0;
     for (int idx = 0 + adjust_nan; idx < size; ++idx) {
         temp += price_ptr[idx]; 
 
@@ -114,7 +102,7 @@ T sma_calc_test(T price, const int period) {
         }   
 
         if (idx >= (period - 1 + adjust_nan)) {
-            sma_ptr[idx] = ((type) temp / period);
+            sma_ptr[idx] = ((T) temp / period);
         }
     }
 
@@ -379,18 +367,19 @@ py::array_t<double> smma_calc(const py::array_t<double> prices, const int period
     @param defualt_size (int): Specify whether the returned vector
         should be the default size with NaNs or not.
 */
-py::array_t<double> lwma_calc(const py::array_t<double> prices, const int periods) {
+template <typename T>
+py::array_t<T> lwma_calc(const py::array_t<T> prices, const int periods) {
 
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    T *prices_ptr = (T*) prices_buf.ptr;
     const int size = prices_buf.shape[0];
 
-    py::array_t<double> lwma = py::array_t<double>(prices_buf.size);
-    double *lwma_ptr = (double *) lwma.request().ptr;
+    py::array_t<T> lwma = py::array_t<T>(prices_buf.size);
+    T *lwma_ptr = (T*) lwma.request().ptr;
     init_nan(lwma_ptr, size);
 
     for (int ii = 0; ii < size - periods + 1; ii++) {
-        double temp = 0;
+        T temp = 0;
         int W = 1;
         int W_sum = 0;
         for (int idx = ii; idx < periods + ii; idx++) {
@@ -415,21 +404,21 @@ py::array_t<double> lwma_calc(const py::array_t<double> prices, const int period
     @param highs (vector<double>): Vector with high prices.
     @param lows (vector<double>): Vector with low prices.
 */
-py::array_t<double> wc_calc(const py::array_t<double> closes, const py::array_t<double> highs,
-        const py::array_t<double> lows) {
+template <typename T>
+py::array_t<T> wc_calc(const py::array_t<T> closes, const py::array_t<T> highs,
+        const py::array_t<T> lows) {
 
     py::buffer_info closes_buf = closes.request();
-    double *closes_ptr = (double *) closes_buf.ptr;
+    T *closes_ptr = (T*) closes_buf.ptr;
     py::buffer_info highs_buf = highs.request();
-    double *highs_ptr = (double *) highs_buf.ptr;
+    T *highs_ptr = (T*) highs_buf.ptr;
     py::buffer_info lows_buf = lows.request();
-    double *lows_ptr = (double *) lows_buf.ptr;
+    T *lows_ptr = (T*) lows_buf.ptr;
     
     const int size = closes_buf.shape[0];
-    py::array_t<double> wc = py::array_t<double>(closes_buf.size);
+    py::array_t<T> wc = py::array_t<T>(closes_buf.size);
     py::buffer_info wc_buf = wc.request();
-    double *wc_ptr = (double *) wc_buf.ptr;
-    // Initialize NaNs
+    T *wc_ptr = (T*) wc_buf.ptr;
     init_nan(wc_ptr, size);
 
     for (int idx = 0; idx < size; ++idx) {
@@ -441,11 +430,8 @@ py::array_t<double> wc_calc(const py::array_t<double> closes, const py::array_t<
 
 
 PYBIND11_MODULE(trend, m) {
-    m.def("sma_calc", &sma_calc, "Simple Moving Average");
-
-    m.def("sma_calc_test", &sma_calc_test<py::array_t<double>>, "Simple Moving Average");
-    m.def("sma_calc_test", &sma_calc_test<py::array_t<float>>, "Simple Moving Average");
-    m.def("sma_calc_test", &sma_calc_test<py::array_t<int>>, "Simple Moving Average");
+    m.def("sma_calc", &sma_calc<double>, "Simple Moving Average");
+    m.def("sma_calc", &sma_calc<float>, "Simple Moving Average");
 
     m.def("ema_calc", &ema_calc, "Exponential Moving Average");
     m.def("dema_calc", &dema_calc, "Double Exponential Moving Average");
@@ -453,6 +439,10 @@ PYBIND11_MODULE(trend, m) {
     m.def("t3_calc", &t3_calc, "T3 Moving Average");
     m.def("tma_calc", &tma_calc, "Triangular Moving Average");
     m.def("smma_calc", &smma_calc, "Smoothed Moving Average");
-    m.def("lwma_calc", &lwma_calc, "Linear Weighted Moving Average");
-    m.def("wc_calc", &wc_calc, "Weighted Close");
+
+    m.def("lwma_calc", &lwma_calc<double>, "Linear Weighted Moving Average");
+    m.def("lwma_calc", &lwma_calc<float>, "Linear Weighted Moving Average");
+
+    m.def("wc_calc", &wc_calc<double>, "Weighted Close");
+    m.def("wc_calc", &wc_calc<float>, "Weighted Close");
 }

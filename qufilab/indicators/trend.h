@@ -9,8 +9,8 @@
 
 namespace py = pybind11;
 
-
-py::array_t<double> sma_calc(const py::array_t<double> price, const int period);
+template <typename T>
+py::array_t<T> sma_calc(const py::array_t<T> price, const int period);
 
 py::array_t<double> ema_calc(const py::array_t<double> prices, const int periods);
 
@@ -25,10 +25,12 @@ py::array_t<double> tma_calc(const py::array_t<double> prices, const int periods
 
 py::array_t<double> smma_calc(const py::array_t<double> prices, const int periods);
 
-py::array_t<double> lwma_calc(const py::array_t<double> prices, const int periods);
+template <typename T>
+py::array_t<T> lwma_calc(const py::array_t<T> prices, const int periods);
 
-py::array_t<double> wc_calc(const py::array_t<double> prices, 
-        const py::array_t<double> highs,
-        const py::array_t<double> lows);
+template <typename T>
+py::array_t<T> wc_calc(const py::array_t<T> prices, 
+        const py::array_t<T> highs,
+        const py::array_t<T> lows);
 
 #endif
