@@ -11,9 +11,9 @@ sys.path.insert(0, os.path.abspath('../..'))
 #import sphinx_rtd_theme
 
 autodoc_mock_imports = ['pandas', 'numpy', 'pybind11', 
-        'qufilab.indicators.trend', 'qufilab.indicators.volume',
-        'qufilab.indicators.stat', 'qufilab.indicators.volatility',
-        'qufilab.indicators.momentum']
+        'qufilab.indicators._trend', 'qufilab.indicators._volume',
+        'qufilab.indicators._stat', 'qufilab.indicators._volatility',
+        'qufilab.indicators._momentum']
 
 # -- Project information -----------------------------------------------------
 
@@ -81,15 +81,15 @@ def linkcode_resolve(domain, info):
 # External links to be used for urls to correct source code part on github.
 extlinks = {
         'trend': ('https://github.com/normelius/qufilab/blob/'\
-        'master/qufilab/indicators/trend.cc#%s', ''),
+        'master/qufilab/indicators/_trend.cc#%s', ''),
         'momentum': ('https://github.com/normelius/qufilab/blob/'\
-        'master/qufilab/indicators/momentum.cc#%s', ''),
+        'master/qufilab/indicators/_momentum.cc#%s', ''),
         'volatility': ('https://github.com/normelius/qufilab/blob/'\
-        'master/qufilab/indicators/volatility.cc#%s', ''),
+        'master/qufilab/indicators/_volatility.cc#%s', ''),
         'volume': ('https://github.com/normelius/qufilab/blob/'\
-        'master/qufilab/indicators/volume.cc#%s', ''),
+        'master/qufilab/indicators/_volume.cc#%s', ''),
         'stat': ('https://github.com/normelius/qufilab/blob/'\
-        'master/qufilab/indicators/stat.cc#%s', '')
+        'master/qufilab/indicators/_stat.cc#%s', '')
         }
 
 
