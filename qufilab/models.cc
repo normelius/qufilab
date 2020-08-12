@@ -16,8 +16,8 @@
 #include <pybind11/stl.h>
 
 #include "common/time.h"
-#include "indicators/trend.h"
-#include "indicators/volatility.h"
+#include "indicators/_trend.h"
+#include "indicators/_volatility.h"
 
 
 /*

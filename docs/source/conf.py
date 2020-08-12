@@ -60,7 +60,7 @@ def linkcode_resolve(domain, info):
     # Start is given by "Implementation of SMA" for example, and end is given by
     # "return sma", for example.
     github_url = "https://github.com/normelius/qufilab/blob/master/qufilab/" \
-            "indicators/{}.cc".format(indicator_type)
+            "indicators/_{}.cc".format(indicator_type)
     
     r = requests.get(github_url)
     soup = bs(r.text, 'html.parser')
@@ -73,7 +73,7 @@ def linkcode_resolve(domain, info):
         lineno = 1
 
     url = 'https://github.com/normelius/qufilab/blob/master/' \
-            'qufilab/indicators/{}.cc#{}'.format(indicator_type,
+            'qufilab/indicators/_{}.cc#{}'.format(indicator_type,
                     lineno)
     return url
 

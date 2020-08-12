@@ -3,8 +3,8 @@ project(models)
 
 ### IMPORTANT! ###
 # Dependencies needs to be specified below.
-set(MODELS_DEPENDENCIES common/time.cc indicators/trend.cc
-    indicators/volatility.cc)
+set(MODELS_DEPENDENCIES common/time.cc indicators/_trend.cc
+    indicators/_volatility.cc)
 
 # Global instructions 
 cmake_minimum_required(VERSION 3.7)

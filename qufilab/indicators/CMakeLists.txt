@@ -17,27 +17,27 @@ find_package(pybind11 REQUIRED)
 
 # Trend module
 #project(trend)
-pybind11_add_module(trend trend.cc)
+pybind11_add_module(_trend _trend.cc)
 
 # Volatility module
-set(VOLATILITY_DEPENDENCIES trend.cc stat.cc)
+set(VOLATILITY_DEPENDENCIES _trend.cc _stat.cc)
 #project(volatility)
-pybind11_add_module(volatility volatility.cc ${VOLATILITY_DEPENDENCIES})
+pybind11_add_module(_volatility _volatility.cc ${VOLATILITY_DEPENDENCIES})
 
 # Momentum module
-set(MOMENTUM_DEPENDENCIES trend.cc)
+set(MOMENTUM_DEPENDENCIES _trend.cc)
 #project(momentum)
-pybind11_add_module(momentum momentum.cc ${MOMENTUM_DEPENDENCIES})
+pybind11_add_module(_momentum _momentum.cc ${MOMENTUM_DEPENDENCIES})
 
 # Volume module
-set(VOLUME_DEPENDENCIES trend.cc)
+set(VOLUME_DEPENDENCIES _trend.cc)
 #project(volume)
-pybind11_add_module(volume volume.cc ${VOLUME_DEPENDENCIES})
+pybind11_add_module(_volume _volume.cc ${VOLUME_DEPENDENCIES})
 
 
 # Stat module
-set(STAT_DEPENDENCIES trend.cc)
-pybind11_add_module(stat stat.cc ${STAT_DEPENDENCIES})
+set(STAT_DEPENDENCIES _trend.cc)
+pybind11_add_module(_stat _stat.cc ${STAT_DEPENDENCIES})
 
 
 #SET(GCC_COVERAGE_COMPILE_FLAGS "-mavx2")
@@ -47,5 +47,5 @@ pybind11_add_module(stat stat.cc ${STAT_DEPENDENCIES})
 #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(volatility PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(_volatility PUBLIC OpenMP::OpenMP_CXX)
 endif()

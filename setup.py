@@ -116,21 +116,21 @@ depends on functions from the trend source file.
 """
 ext_modules = [
     # Models extension
-    Extension(
-        'qufilab.models',
-        sorted(['qufilab/models.cc',
-            'qufilab/common/time.cc', 
-            'qufilab/indicators/volatility.cc',
-            'qufilab/indicators/trend.cc']),
-        include_dirs=[
-            get_pybind_include(),
-        ],
-        language='c++'
-    ),
+    #Extension(
+    #    'qufilab.models',
+    #    sorted(['qufilab/models.cc',
+    #        'qufilab/common/time.cc', 
+    #        'qufilab/indicators/_volatility.cc',
+    #        'qufilab/indicators/_trend.cc']),
+    #    include_dirs=[
+    #        get_pybind_include(),
+    #    ],
+    #    language='c++'
+    #),
     # Trend extension
     Extension(
-        'qufilab.indicators.trend',
-        sorted(['qufilab/indicators/trend.cc']),
+        'qufilab.indicators._trend',
+        sorted(['qufilab/indicators/_trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
@@ -138,40 +138,40 @@ ext_modules = [
     ),
     # Volatility extension
     Extension(
-        'qufilab.indicators.volatility',
-        sorted(['qufilab/indicators/volatility.cc',
-            'qufilab/indicators/trend.cc',
-            'qufilab/indicators/stat.cc']),
+        'qufilab.indicators._volatility',
+        sorted(['qufilab/indicators/_volatility.cc',
+            'qufilab/indicators/_trend.cc',
+            'qufilab/indicators/_stat.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
         language='c++'
     ),
-    # Momentum extension
+    ## Momentum extension
     Extension(
-        'qufilab.indicators.momentum',
-        sorted(['qufilab/indicators/momentum.cc',
-            'qufilab/indicators/trend.cc']),
+        'qufilab.indicators._momentum',
+        sorted(['qufilab/indicators/_momentum.cc',
+            'qufilab/indicators/_trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
         language='c++'
     ),
-    # Volume extension
+    ## Volume extension
     Extension(
-        'qufilab.indicators.volume',
-        sorted(['qufilab/indicators/volume.cc',
-            'qufilab/indicators/trend.cc']),
+        'qufilab.indicators._volume',
+        sorted(['qufilab/indicators/_volume.cc',
+            'qufilab/indicators/_trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
         language='c++'
     ),
-    # Stat extension
+    ## Stat extension
     Extension(
-        'qufilab.indicators.stat',
-        sorted(['qufilab/indicators/stat.cc',
-            'qufilab/indicators/trend.cc']),
+        'qufilab.indicators._stat',
+        sorted(['qufilab/indicators/_stat.cc',
+            'qufilab/indicators/_trend.cc']),
         include_dirs=[
             get_pybind_include(),
         ],
