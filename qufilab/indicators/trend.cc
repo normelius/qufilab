@@ -32,11 +32,11 @@ namespace py = pybind11;
 template <typename T>
 py::array_t<T> sma_calc(const py::array_t<T> price, const int period) {
     py::buffer_info price_buf = price.request();
-    T *price_ptr = (T*) price_buf.ptr;
+    auto *price_ptr = (T*) price_buf.ptr;
     const int size = price_buf.shape[0];
 
-    py::array_t<T> sma = py::array_t<T>(price_buf.size);
-    T *sma_ptr = (T*) sma.request().ptr;
+    auto sma = py::array_t<T>(price_buf.size);
+    auto *sma_ptr = (T*) sma.request().ptr;
     init_nan(sma_ptr, size);
 
     // Check leading NaNs and adjust calculation below. This is needed if arg prices contain
@@ -120,13 +120,14 @@ py::array_t<T> sma_calc_test(py::array_t<T> price, const int period) {
     @param prices (vector<double>): Vector with prices.
     @param periods (int): Number of periods.
  */
-py::array_t<double> ema_calc(const py::array_t<double> prices, const int periods) {
+template <typename T>
+py::array_t<T> ema_calc(const py::array_t<T> prices, const int periods) {
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
     
-    py::array_t<double> ema = py::array_t<double>(prices_buf.size);
-    double *ema_ptr = (double *) ema.request().ptr;
+    auto ema = py::array_t<T>(prices_buf.size);
+    auto *ema_ptr = (T *) ema.request().ptr;
     init_nan(ema_ptr, size);
     
     // Check leading NaNs and adjust calculation below. This is needed if arg prices contain
@@ -143,11 +144,11 @@ py::array_t<double> ema_calc(const py::array_t<double> prices, const int periods
     }
 
     // Start with sma for first data point.
-    double prev = std::accumulate(prices_ptr + adjust_nan, prices_ptr + periods + adjust_nan, 0.0);
+    T prev = std::accumulate(prices_ptr + adjust_nan, prices_ptr + periods + adjust_nan, 0.0);
     prev /= periods;
 
     // Multiplier, i.e. 18.18% weight with period 10;
-    double k = (double) 2 / (periods + 1);
+    T k = (T) 2 / (periods + 1);
     //prev = (prices[periods-1] - prev) * k + prev;
     ema_ptr[periods - 1 + adjust_nan] = prev;
 
@@ -169,19 +170,20 @@ py::array_t<double> ema_calc(const py::array_t<double> prices, const int periods
     @param prices (py::array_t<double>): Array with prices.
     @param periods (int): Number of periods.
  */
-py::array_t<double> dema_calc(const py::array_t<double> prices, const int periods) {
+template <typename T>
+py::array_t<T> dema_calc(const py::array_t<T> prices, const int periods) {
     
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
 
-    py::array_t<double> ema1 = ema_calc(prices, periods);
-    py::array_t<double> ema2 = ema_calc(ema1, periods);
+    auto ema1 = ema_calc(prices, periods);
+    auto ema2 = ema_calc(ema1, periods);
     
-    double *ema1_ptr = (double *) ema1.request().ptr;
-    double *ema2_ptr = (double *) ema2.request().ptr;
+    auto *ema1_ptr = (T *) ema1.request().ptr;
+    auto *ema2_ptr = (T *) ema2.request().ptr;
 
-    py::array_t<double> dema = py::array_t<double>(prices_buf.size);
-    double *dema_ptr = (double *) dema.request().ptr;
+    auto dema = py::array_t<T>(prices_buf.size);
+    auto *dema_ptr = (T*) dema.request().ptr;
     init_nan(dema_ptr, size);
 
     for (int idx = 2*periods-2; idx < ema1.size(); ++idx) {
@@ -199,21 +201,22 @@ py::array_t<double> dema_calc(const py::array_t<double> prices, const int period
     @param prices (py::array_t<double>): Array with prices.
     @param periods (int): Number of periods.
  */
-py::array_t<double> tema_calc(const py::array_t<double> prices, const int periods) {
+template <typename T>
+py::array_t<T> tema_calc(const py::array_t<T> prices, const int periods) {
     
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
 
-    py::array_t<double> ema1 = ema_calc(prices, periods);
-    py::array_t<double> ema2 = ema_calc(ema1, periods);
-    py::array_t<double> ema3 = ema_calc(ema2, periods);
+    auto ema1 = ema_calc(prices, periods);
+    auto ema2 = ema_calc(ema1, periods);
+    auto ema3 = ema_calc(ema2, periods);
     
-    double *ema1_ptr = (double *) ema1.request().ptr;
-    double *ema2_ptr = (double *) ema2.request().ptr;
-    double *ema3_ptr = (double *) ema3.request().ptr;
+    auto *ema1_ptr = (T *) ema1.request().ptr;
+    auto *ema2_ptr = (T *) ema2.request().ptr;
+    auto *ema3_ptr = (T *) ema3.request().ptr;
 
-    py::array_t<double> tema = py::array_t<double>(prices_buf.size);
-    double *tema_ptr = (double *) tema.request().ptr;
+    auto tema = py::array_t<T>(prices_buf.size);
+    auto *tema_ptr = (T *) tema.request().ptr;
     init_nan(tema_ptr, size);
 
     for (int idx = 3*periods-3; idx < prices.size(); ++idx) {
@@ -243,32 +246,33 @@ py::array_t<double> tema_calc(const py::array_t<double> prices, const int period
     @param prices (py::array_t<double>): Array with prices.
     @param periods (int): Number of periods.
  */
-py::array_t<double> t3_calc(const py::array_t<double> prices, const int periods,
+template <typename T>
+py::array_t<T> t3_calc(const py::array_t<T> prices, const int periods,
         const double volume_factor) {
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
 
-    py::array_t<double> t3 = py::array_t<double>(prices_buf.size);
-    double *t3_ptr = (double *) t3.request().ptr;
+    auto t3 = py::array_t<T>(prices_buf.size);
+    auto *t3_ptr = (T *) t3.request().ptr;
     init_nan(t3_ptr, size);
     
-    py::array_t<double> ema1 = ema_calc(prices, periods);
-    py::array_t<double> ema2 = ema_calc(ema1, periods);
-    py::array_t<double> ema3 = ema_calc(ema2, periods);
-    py::array_t<double> ema4 = ema_calc(ema3, periods);
-    py::array_t<double> ema5 = ema_calc(ema4, periods);
-    py::array_t<double> ema6 = ema_calc(ema5, periods);
+    auto ema1 = ema_calc(prices, periods);
+    auto ema2 = ema_calc(ema1, periods);
+    auto ema3 = ema_calc(ema2, periods);
+    auto ema4 = ema_calc(ema3, periods);
+    auto ema5 = ema_calc(ema4, periods);
+    auto ema6 = ema_calc(ema5, periods);
 
-    double *ema3_ptr = (double *) ema3.request().ptr;
-    double *ema4_ptr = (double *) ema4.request().ptr;
-    double *ema5_ptr = (double *) ema5.request().ptr;
-    double *ema6_ptr = (double *) ema6.request().ptr;
+    auto *ema3_ptr = (T *) ema3.request().ptr;
+    auto *ema4_ptr = (T *) ema4.request().ptr;
+    auto *ema5_ptr = (T *) ema5.request().ptr;
+    auto *ema6_ptr = (T *) ema6.request().ptr;
     
-    double c1 = -std::pow(volume_factor, 3);
-    double c2 = 3 * std::pow(volume_factor, 2) + 3 * std::pow(volume_factor, 3);
-    double c3 = - 6 * std::pow(volume_factor, 2) - 3 * volume_factor - 3 * std::pow(volume_factor, 3);
-    double c4 = 1 + 3 * volume_factor + std::pow(volume_factor, 3) + 3 * std::pow(volume_factor, 2);
+    T c1 = -std::pow(volume_factor, 3);
+    T c2 = 3 * std::pow(volume_factor, 2) + 3 * std::pow(volume_factor, 3);
+    T c3 = - 6 * std::pow(volume_factor, 2) - 3 * volume_factor - 3 * std::pow(volume_factor, 3);
+    T c4 = 1 + 3 * volume_factor + std::pow(volume_factor, 3) + 3 * std::pow(volume_factor, 2);
     
     for (int idx = periods*5-1; idx < size; ++idx) {
         t3_ptr[idx] = c1*ema6_ptr[idx] + c2*ema5_ptr[idx] + c3*ema4_ptr[idx] + c4*ema3_ptr[idx];
@@ -296,8 +300,9 @@ py::array_t<double> t3_calc(const py::array_t<double> prices, const int periods,
     further by extending the original sma implementation. However, it is going to 
     take some time doing the math so, leaving this for a rainy day.
  */
-py::array_t<double> tma_calc(const py::array_t<double> prices, const int period) {
-    
+template <typename T>
+py::array_t<T> tma_calc(const py::array_t<T> prices, const int period) {
+
     int first_period;
     int second_period;
 
@@ -307,41 +312,42 @@ py::array_t<double> tma_calc(const py::array_t<double> prices, const int period)
     }
 
     else {
-        first_period = std::ceil((double) (period+1)/2);
-        second_period = std::ceil((double) (period+1)/2);
+        first_period = std::ceil((T) (period+1)/2);
+        second_period = std::ceil((T) (period+1)/2);
     }
 
-    py::array_t<double> sma = sma_calc(prices, first_period);
-    py::array_t<double> tma = sma_calc(sma, second_period);
+    py::array_t<T> sma = sma_calc(prices, first_period);
+    py::array_t<T> tma = sma_calc(sma, second_period);
 
     return tma;
 }
 
 /*
-    Implementation of SMMA.
-    Smoothed Moving Average.
+   Implementation of SMMA.
+   Smoothed Moving Average.
 
-    Math: 
-        1. First value = sma.
-        2. SMMA(i) = (SMMA1(i - 1) * (periods - 1) + prices(i)) / periods.
-    
-    @param prices (vector<double>): Vector with prices.
-    @param periods (int): Number of periods.
-    @param defualt_size (int): Specify whether the returned vector
-        should be the default size with NaNs or not.
- */
-py::array_t<double> smma_calc(const py::array_t<double> prices, const int periods) {
+Math: 
+1. First value = sma.
+2. SMMA(i) = (SMMA1(i - 1) * (periods - 1) + prices(i)) / periods.
+
+@param prices (vector<double>): Vector with prices.
+@param periods (int): Number of periods.
+@param defualt_size (int): Specify whether the returned vector
+should be the default size with NaNs or not.
+*/
+template <typename T>
+py::array_t<T> smma_calc(const py::array_t<T> prices, const int periods) {
 
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
-    
-    py::array_t<double> smma = py::array_t<double>(prices_buf.size);
-    double *smma_ptr = (double *) smma.request().ptr;
+
+    auto smma = py::array_t<T>(prices_buf.size);
+    auto *smma_ptr = (T *) smma.request().ptr;
     init_nan(smma_ptr, size);
 
     // Start with sma for first data point.
-    double prev = std::accumulate(prices_ptr, prices_ptr + periods, 0.0);
+    T prev = std::accumulate(prices_ptr, prices_ptr + periods, 0.0);
     prev /= periods;
     //double prev = (smma1 * (periods - 1) + prices[periods-1]) / periods;
     smma_ptr[periods-1] = prev;
@@ -356,26 +362,26 @@ py::array_t<double> smma_calc(const py::array_t<double> prices, const int period
 
 
 /*
-    Implementation of LWMA.
-    Linear Weighted Moving Average
+   Implementation of LWMA.
+   Linear Weighted Moving Average
 
-    Math: LWMA = sum(prices[i] * W(i)) / sum(W),
-    where W are the weights, ranging from 1-periods.
+Math: LWMA = sum(prices[i] * W(i)) / sum(W),
+where W are the weights, ranging from 1-periods.
 
-    @param prices (vector<double>): Vector with prices.
-    @param periods (int): Number of periods.
-    @param defualt_size (int): Specify whether the returned vector
-        should be the default size with NaNs or not.
+@param prices (vector<double>): Vector with prices.
+@param periods (int): Number of periods.
+@param defualt_size (int): Specify whether the returned vector
+should be the default size with NaNs or not.
 */
 template <typename T>
 py::array_t<T> lwma_calc(const py::array_t<T> prices, const int periods) {
 
     py::buffer_info prices_buf = prices.request();
-    T *prices_ptr = (T*) prices_buf.ptr;
+    auto *prices_ptr = (T*) prices_buf.ptr;
     const int size = prices_buf.shape[0];
 
-    py::array_t<T> lwma = py::array_t<T>(prices_buf.size);
-    T *lwma_ptr = (T*) lwma.request().ptr;
+    auto lwma = py::array_t<T>(prices_buf.size);
+    auto *lwma_ptr = (T*) lwma.request().ptr;
     init_nan(lwma_ptr, size);
 
     for (int ii = 0; ii < size - periods + 1; ii++) {
@@ -387,6 +393,7 @@ py::array_t<T> lwma_calc(const py::array_t<T> prices, const int periods) {
             W_sum += W;
             W++;
         }
+
         temp /= W_sum;
         lwma_ptr[ii+periods-1] = temp;
     }
@@ -395,50 +402,63 @@ py::array_t<T> lwma_calc(const py::array_t<T> prices, const int periods) {
 }
 
 /*
-    Implementation of WC.
-    Weighted Close.
+   Implementation of WC.
+   Weighted Close.
 
-    Math: wc[i] = ((close * 2) + high + low) / 4,
+Math: wc[i] = ((close * 2) + high + low) / 4,
 
-    @param prices (vector<double>): Vector with closing prices.
-    @param highs (vector<double>): Vector with high prices.
-    @param lows (vector<double>): Vector with low prices.
+@param prices (vector<double>): Vector with closing prices.
+@param highs (vector<double>): Vector with high prices.
+@param lows (vector<double>): Vector with low prices.
 */
 template <typename T>
 py::array_t<T> wc_calc(const py::array_t<T> closes, const py::array_t<T> highs,
-        const py::array_t<T> lows) {
+     const py::array_t<T> lows) {
 
     py::buffer_info closes_buf = closes.request();
-    T *closes_ptr = (T*) closes_buf.ptr;
+    auto *closes_ptr = (T*) closes_buf.ptr;
     py::buffer_info highs_buf = highs.request();
-    T *highs_ptr = (T*) highs_buf.ptr;
+    auto *highs_ptr = (T*) highs_buf.ptr;
     py::buffer_info lows_buf = lows.request();
-    T *lows_ptr = (T*) lows_buf.ptr;
-    
+    auto *lows_ptr = (T*) lows_buf.ptr;
+
     const int size = closes_buf.shape[0];
-    py::array_t<T> wc = py::array_t<T>(closes_buf.size);
+    auto wc = py::array_t<T>(closes_buf.size);
     py::buffer_info wc_buf = wc.request();
-    T *wc_ptr = (T*) wc_buf.ptr;
+    auto *wc_ptr = (T*) wc_buf.ptr;
     init_nan(wc_ptr, size);
 
     for (int idx = 0; idx < size; ++idx) {
         wc_ptr[idx] = ((closes_ptr[idx] * 2) + highs_ptr[idx] + lows_ptr[idx]) / 4;
     }
 
-    return wc;
+return wc;
 }
 
 
+// Declare all functions and it's respective argument type. This is needed
+// to so that ordinary .py files can interface with these functions.
 PYBIND11_MODULE(trend, m) {
     m.def("sma_calc", &sma_calc<double>, "Simple Moving Average");
     m.def("sma_calc", &sma_calc<float>, "Simple Moving Average");
 
-    m.def("ema_calc", &ema_calc, "Exponential Moving Average");
-    m.def("dema_calc", &dema_calc, "Double Exponential Moving Average");
-    m.def("tema_calc", &tema_calc, "Triple Exponential Moving Average");
-    m.def("t3_calc", &t3_calc, "T3 Moving Average");
-    m.def("tma_calc", &tma_calc, "Triangular Moving Average");
-    m.def("smma_calc", &smma_calc, "Smoothed Moving Average");
+    m.def("ema_calc", &ema_calc<double>, "Exponential Moving Average");
+    m.def("ema_calc", &ema_calc<float>, "Exponential Moving Average");
+
+    m.def("dema_calc", &dema_calc<double>, "Double Exponential Moving Average");
+    m.def("dema_calc", &dema_calc<float>, "Double Exponential Moving Average");
+
+    m.def("tema_calc", &tema_calc<double>, "Triple Exponential Moving Average");
+    m.def("tema_calc", &tema_calc<float>, "Triple Exponential Moving Average");
+
+    m.def("t3_calc", &t3_calc<double>, "T3 Moving Average");
+    m.def("t3_calc", &t3_calc<float>, "T3 Moving Average");
+
+    m.def("tma_calc", &tma_calc<double>, "Triangular Moving Average");
+    m.def("tma_calc", &tma_calc<float>, "Triangular Moving Average");
+
+    m.def("smma_calc", &smma_calc<double>, "Smoothed Moving Average");
+    m.def("smma_calc", &smma_calc<float>, "Smoothed Moving Average");
 
     m.def("lwma_calc", &lwma_calc<double>, "Linear Weighted Moving Average");
     m.def("lwma_calc", &lwma_calc<float>, "Linear Weighted Moving Average");
