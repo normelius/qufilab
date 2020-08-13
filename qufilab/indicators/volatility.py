@@ -32,7 +32,7 @@ def bbands(price, period, deviation = 2):
     lower : `ndarray`
         lower bollinger band.
     """
-    return bbands_calc(data, period, deviation)
+    return bbands_calc(price, period, deviation)
 
 def kc(close, high, low, period = 20, period_atr = 20, deviation = 2):
     """
