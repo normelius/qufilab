@@ -75,6 +75,8 @@ def roc(price, period):
     """
     Price rate of change
 
+    Parameters
+    ----------
     price : `ndarray`
         Array of type float64 or float32 containing price values.
     period : `int`
@@ -92,6 +94,8 @@ def vpt(price, volume):
     """
     Volume price trend
 
+    Parameters
+    ----------
     price : `ndarray`
         Array of type float64 or float32 containing price values.
     volume : `ndarray`
@@ -109,6 +113,8 @@ def mi(price, period):
     """
     Momentum indicator
 
+    Parameters
+    ----------
     price : `ndarray`
         Array of type float64 or float32 containing price values.
     period : `int`
@@ -126,6 +132,8 @@ def apo(price, period_slow = 26, period_fast = 12, ma = "sma"):
     """
     Absolute price oscillator
 
+    Parameters
+    ----------
     price : `ndarray`
         Array of type float64 or float32 containing price values.
     period_slow : `int`, optional
@@ -153,6 +161,8 @@ def bop(high, low, open_, close):
     """
     Balance of power
 
+    Parameters
+    ----------
     high : `ndarray`
         Array of type float64 or float32 containing high prices.
     low : `ndarray`
@@ -174,6 +184,8 @@ def cmo(close, period):
     """
     Chande momentum indicator
 
+    Parameters
+    ----------
     close : `ndarray`
         Array of type float64 or float32 containing closing prices.
     period : `int`
@@ -191,6 +203,8 @@ def mfi(high, low, close, volume, period):
     """
     Money flow index
 
+    Parameters
+    ----------
     high : `ndarray`
         Array of type float64 or float32 containing high prices.
     low : `ndarray`
@@ -273,6 +287,8 @@ def cci(close, high, low, period = 20):
     """
     Commodity channel index
 
+    Parameters
+    ----------
     close : `ndarray`
         Array of type float64 or float32 containing closing prices.
     high : `ndarray`
@@ -294,7 +310,9 @@ def cci(close, high, low, period = 20):
 def aroon(high, low, period = 20):
     """
     Aroon indicator
-
+    
+    Parameters
+    ----------
     high : `ndarray`
         Array of type float64 or float32 containing high prices.
     low : `ndarray`
