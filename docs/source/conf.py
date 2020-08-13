@@ -31,7 +31,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'numpydoc',
         'sphinx.ext.extlinks', 'autodocsumm']
 
 # Uncomment line below if source should be included. 
-#extensions.append('sphinx.ext.linkcode')
+extensions.append('sphinx.ext.linkcode')
 def linkcode_resolve(domain, info):
     if domain != 'py':
         return None
@@ -50,7 +50,7 @@ def linkcode_resolve(domain, info):
             data = yaml.safe_load(stream)
             for indicator_type, indicators in data.items():
                 if fullname in indicators:
-                    filename = "qufilab/indicators/"+indicator_type+".cc"
+                    filename = "qufilab/indicators/_"+indicator_type+".cc"
                     break
 
         except yaml.YAMLError as exc:

@@ -11,3 +11,18 @@ trend:
     - lwma
     - wc
 
+momentum:
+    - rsi
+    - macd
+    - roc
+    - vpt
+    - mi
+    - cci
+    - aroon
+    - tsi
+    - apo
+    - bop
+    - cmo
+    - mfi
+    - ppo
+
