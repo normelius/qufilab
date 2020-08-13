@@ -22,28 +22,30 @@ namespace py = pybind11;
     Accumulation Distribution (ACDI)
 
  */
-py::array_t<double> acdi_calc(const py::array_t<double> prices,
-        const py::array_t<double> highs, const py::array_t<double> lows,
-        const py::array_t<double> volumes) {
+template <typename T>
+py::array_t<T> acdi_calc(const py::array_t<T> prices,
+        const py::array_t<T> highs, const py::array_t<T> lows,
+        const py::array_t<T> volumes) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
-    py::array_t<double> acdi = py::array_t<double>(prices_buf.size);
+    auto acdi = py::array_t<T>(prices_buf.size);
 
-    double *prices_ptr = (double *) prices_buf.ptr;
-    double *highs_ptr = (double *) highs.request().ptr;
-    double *lows_ptr = (double *) lows.request().ptr;
-    double *volumes_ptr = (double *) volumes.request().ptr;
-    double *acdi_ptr = (double *) acdi.request().ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
+    auto *highs_ptr = (T *) highs.request().ptr;
+    auto *lows_ptr = (T *) lows.request().ptr;
+    auto *volumes_ptr = (T *) volumes.request().ptr;
+    auto *acdi_ptr = (T *) acdi.request().ptr;
     init_nan(acdi_ptr, size);
     
-    double ad = 0.0;
+    T ad = 0.0;
     for (int idx = 0; idx < size; ++idx) {
-        double nominator = highs_ptr[idx] - lows_ptr[idx];
+        T nominator = highs_ptr[idx] - lows_ptr[idx];
         // Santiy check, highs should never be higher than low.
         if (nominator > 0.0) {
-        ad += (((prices_ptr[idx] - lows_ptr[idx]) - (highs_ptr[idx] - prices_ptr[idx])) / nominator) * 
-            (double)volumes_ptr[idx];
+        ad += (((prices_ptr[idx] - lows_ptr[idx]) - 
+                    (highs_ptr[idx] - prices_ptr[idx])) / nominator) * 
+                    (T)volumes_ptr[idx];
         }
         
         acdi_ptr[idx] = ad;
@@ -59,16 +61,17 @@ py::array_t<double> acdi_calc(const py::array_t<double> prices,
     @param (py::array_t<double>) volumes: Vector with volumes.
  */
 
-py::array_t<double> obv_calc(const py::array_t<double> prices, 
-        const py::array_t<double> volumes) {
+template <typename T>
+py::array_t<T> obv_calc(const py::array_t<T> prices, 
+        const py::array_t<T> volumes) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
-    py::array_t<double> obv = py::array_t<double>(prices_buf.size);
+    auto obv = py::array_t<T>(prices_buf.size);
 
-    double *prices_ptr = (double *) prices_buf.ptr;
-    double *volumes_ptr = (double *) volumes.request().ptr;
-    double *obv_ptr = (double *) obv.request().ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
+    auto *volumes_ptr = (T *) volumes.request().ptr;
+    auto *obv_ptr = (T *) obv.request().ptr;
     init_nan(obv_ptr, size);
     obv_ptr[0] = volumes_ptr[0];
 
@@ -98,35 +101,36 @@ py::array_t<double> obv_calc(const py::array_t<double> prices,
     @param (vector<volumes>) volumes: Vector with volumes.
     @param (int) periods: Number of periods. Standard 21.
  */
-py::array_t<double> cmf_calc(const py::array_t<double> prices,
-        const py::array_t<double> highs, const py::array_t<double> lows,
-        const py::array_t<double> volumes, const int periods) {
+template <typename T>
+py::array_t<T> cmf_calc(const py::array_t<T> prices,
+        const py::array_t<T> highs, const py::array_t<T> lows,
+        const py::array_t<T> volumes, const int periods) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
 
-    double *prices_ptr = (double *) prices_buf.ptr;
-    double *highs_ptr = (double *) highs.request().ptr;
-    double *lows_ptr = (double *) lows.request().ptr;
-    double *volumes_ptr = (double *) volumes.request().ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
+    auto *highs_ptr = (T *) highs.request().ptr;
+    auto *lows_ptr = (T *) lows.request().ptr;
+    auto *volumes_ptr = (T *) volumes.request().ptr;
 
-    py::array_t<double> cmf = py::array_t<double>(prices_buf.size);
-    py::array_t<double> ac = py::array_t<double>(prices_buf.size);
-    double *cmf_ptr = (double *) cmf.request().ptr;
-    double *ac_ptr = (double *) ac.request().ptr;
+    auto cmf = py::array_t<T>(prices_buf.size);
+    auto ac = py::array_t<T>(prices_buf.size);
+    auto *cmf_ptr = (T *) cmf.request().ptr;
+    auto *ac_ptr = (T *) ac.request().ptr;
 
     init_nan(cmf_ptr, size);
     init_nan(ac_ptr, size);
     
     // Money Flow Multiplier.
-    for (size_t idx = 0; idx < size; ++idx) {
+    for (int idx = 0; idx < size; ++idx) {
         ac_ptr[idx] = (((prices_ptr[idx] - lows_ptr[idx]) - (highs_ptr[idx] - prices_ptr[idx])) / 
             (highs_ptr[idx] - lows_ptr[idx])) * volumes_ptr[idx];
     }
 
-    for (size_t idx = periods; idx < size + 1; ++idx) {
-        double sum = std::accumulate(ac_ptr + idx - periods, ac_ptr + idx, 0.0);
-        double vol = std::accumulate(volumes_ptr + idx - periods, volumes_ptr + idx, 0.0);
+    for (int idx = periods; idx < size + 1; ++idx) {
+        T sum = std::accumulate(ac_ptr + idx - periods, ac_ptr + idx, 0.0);
+        T vol = std::accumulate(volumes_ptr + idx - periods, volumes_ptr + idx, 0.0);
         cmf_ptr[idx-1] = sum / vol;
     }
    
@@ -141,26 +145,27 @@ py::array_t<double> cmf_calc(const py::array_t<double> prices,
     @param (py::array_t<double>) lows: Vector with low prices.
     @param (py::array_t<double>) volumes: Vector with volumes.
  */
-py::array_t<double> ci_calc(const py::array_t<double> prices,
-        const py::array_t<double> highs, const py::array_t<double> lows,
-        const py::array_t<double> volumes) {
+template <typename T>
+py::array_t<T> ci_calc(const py::array_t<T> prices,
+        const py::array_t<T> highs, const py::array_t<T> lows,
+        const py::array_t<T> volumes) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
 
-    py::array_t<double> ci = py::array_t<double>(prices_buf.size);
-    double *ci_ptr = (double *) ci.request().ptr;
+    auto ci = py::array_t<T>(prices_buf.size);
+    auto *ci_ptr = (T *) ci.request().ptr;
     init_nan(ci_ptr, size);
 
-    py::array_t<double> acdi = acdi_calc(prices, highs, lows, volumes);
-    double *acdi_ptr = (double*) acdi.request().ptr;
+    py::array_t<T> acdi = acdi_calc(prices, highs, lows, volumes);
+    auto *acdi_ptr = (T *) acdi.request().ptr;
 
-    py::array_t<double> ema10 = ema_calc(acdi, 10);
-    double *ema10_ptr = (double *) ema10.request().ptr;
+    py::array_t<T> ema10 = ema_calc(acdi, 10);
+    auto *ema10_ptr = (T *) ema10.request().ptr;
 
-    py::array_t<double> ema3 = ema_calc(acdi, 3);
-    double *ema3_ptr = (double *) ema3.request().ptr;
+    py::array_t<T> ema3 = ema_calc(acdi, 3);
+    auto *ema3_ptr = (T *) ema3.request().ptr;
 
     for (int idx = 9; idx < size; idx++) {
         ci_ptr[idx] = ema3_ptr[idx] - ema10_ptr[idx];
@@ -178,21 +183,22 @@ py::array_t<double> ci_calc(const py::array_t<double> prices,
  *  @param (vector<volumes>) volumes: Vector with volumes.
  *
  */
-py::array_t<double> pvi_calc(const py::array_t<double> prices,
-        const py::array_t<double> volumes) {
+template <typename T>
+py::array_t<T> pvi_calc(const py::array_t<T> prices,
+        const py::array_t<T> volumes) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
-    py::array_t<double> pvi = py::array_t<double>(prices_buf.size);
+    auto pvi = py::array_t<T>(prices_buf.size);
 
-    double *prices_ptr = (double *) prices_buf.ptr;
-    double *volumes_ptr = (double *) volumes.request().ptr;
-    double *pvi_ptr = (double *) pvi.request().ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
+    auto *volumes_ptr = (T *) volumes.request().ptr;
+    auto *pvi_ptr = (T *) pvi.request().ptr;
 
     init_nan(pvi_ptr, size);
     pvi_ptr[0] = 100.0;
 
-    for (size_t idx = 1; idx < size; ++idx) {
+    for (int idx = 1; idx < size; ++idx) {
         if (volumes_ptr[idx] > volumes_ptr[idx-1]) {
             pvi_ptr[idx] = pvi_ptr[idx-1] + ((prices_ptr[idx] - prices_ptr[idx-1]) 
                     / prices_ptr[idx-1]) * pvi_ptr[idx-1];
@@ -215,21 +221,22 @@ py::array_t<double> pvi_calc(const py::array_t<double> prices,
  *  @param (vector<volumes>) volumes: Vector with volumes.
  *
  */
-py::array_t<double> nvi_calc(const py::array_t<double> prices,
-        const py::array_t<double> volumes) {
+template <typename T>
+py::array_t<T> nvi_calc(const py::array_t<T> prices,
+        const py::array_t<T> volumes) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
-    py::array_t<double> nvi = py::array_t<double>(prices_buf.size);
+    auto nvi = py::array_t<T>(prices_buf.size);
 
-    double *prices_ptr = (double *) prices_buf.ptr;
-    double *volumes_ptr = (double *) volumes.request().ptr;
-    double *nvi_ptr = (double *) nvi.request().ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
+    auto *volumes_ptr = (T *) volumes.request().ptr;
+    auto *nvi_ptr = (T *) nvi.request().ptr;
 
     init_nan(nvi_ptr, size);
     nvi_ptr[0] = 100.0;
 
-    for (size_t idx = 1; idx < size; ++idx) {
+    for (int idx = 1; idx < size; ++idx) {
         if (volumes_ptr[idx] < volumes_ptr[idx-1]) {
             nvi_ptr[idx] = nvi_ptr[idx-1] + ((prices_ptr[idx] - prices_ptr[idx-1]) 
                     / prices_ptr[idx-1]) * nvi_ptr[idx-1];
@@ -245,12 +252,23 @@ py::array_t<double> nvi_calc(const py::array_t<double> prices,
 
 
 PYBIND11_MODULE(_volume, m) {
-    m.def("acdi_calc", &acdi_calc, "Accumulation Distribution");
-    m.def("obv_calc", &obv_calc, "On Balance Volume");
-    m.def("cmf_calc", &cmf_calc, "Chaikin Money Flow");
-    m.def("ci_calc", &ci_calc, "Chaikin Indicator");
-    m.def("pvi_calc", &pvi_calc, "Positive Volume Index");
-    m.def("nvi_calc", &nvi_calc, "Negative Volume Index");
+    m.def("acdi_calc", &acdi_calc<double>, "Accumulation Distribution");
+    m.def("acdi_calc", &acdi_calc<float>, "Accumulation Distribution");
+
+    m.def("obv_calc", &obv_calc<double>, "On Balance Volume");
+    m.def("obv_calc", &obv_calc<float>, "On Balance Volume");
+
+    m.def("cmf_calc", &cmf_calc<double>, "Chaikin Money Flow");
+    m.def("cmf_calc", &cmf_calc<float>, "Chaikin Money Flow");
+
+    m.def("ci_calc", &ci_calc<double>, "Chaikin Indicator");
+    m.def("ci_calc", &ci_calc<float>, "Chaikin Indicator");
+
+    m.def("pvi_calc", &pvi_calc<double>, "Positive Volume Index");
+    m.def("pvi_calc", &pvi_calc<float>, "Positive Volume Index");
+
+    m.def("nvi_calc", &nvi_calc<double>, "Negative Volume Index");
+    m.def("nvi_calc", &nvi_calc<float>, "Negative Volume Index");
 }
 
 

@@ -15,7 +15,6 @@
 #include <omp.h>
 #include <x86intrin.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
 #include "_volatility.h"
@@ -25,48 +24,6 @@
 
 namespace py = pybind11;
 
-
-/*
-    Calculation of Standard Deviation using normalization
-    with N - 1, where N is the sample size, i.e. number of periods.
- */
-/*
-py::array_t<double> std_calc(const py::array_t<double> prices, 
-        const int periods, const bool normalize) {
-
-    py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
-    const int size = prices_buf.shape[0];
-
-    py::array_t<double> sma = sma_calc(prices, periods);    
-    double *sma_ptr = (double *) sma.request().ptr;
-
-    py::array_t<double> stdvec = py::array_t<double>(prices_buf.size);
-    double *stdvec_ptr = (double *) stdvec.request().ptr;
-    init_nan(stdvec_ptr, size);
-
-    for (int ii = 0; ii < size - periods + 1; ii++) {
-        double temp = 0;
-
-        for (int idx = ii; idx < periods + ii; idx++) {
-            temp += pow((prices_ptr[idx] - sma_ptr[ii+periods-1]), 2);
-        }
-
-        if (normalize == true) {
-            temp /= (periods - 1);
-        }
-
-        else {
-            temp /= (periods);
-        }
-
-        temp = sqrt(temp);
-        stdvec_ptr[ii+periods-1] = temp;
-    }
-    
-    return stdvec;
-}
-*/
 
 /*
     Calculates Bollinger Bands.
@@ -81,27 +38,28 @@ py::array_t<double> std_calc(const py::array_t<double> prices,
 
     @return (tuple): Lower and upper bollinger bands.
  */
-std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<double>> 
-    bbands_calc(const py::array_t<double> prices, 
+template <typename T>
+std::tuple<py::array_t<T>, py::array_t<T>, py::array_t<T>> 
+    bbands_calc(const py::array_t<T> prices, 
         const int periods, const int deviation) {
    
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
 
-    py::array_t<double> sma = sma_calc(prices, periods);
-    const double *sma_ptr = (double *) sma.request().ptr;
+    auto sma = sma_calc(prices, periods);
+    const auto *sma_ptr = (T *) sma.request().ptr;
 
     // Observe no normalization of the standard deviation.
-    py::array_t<double> std = std_calc(prices, periods, false);
-    const double *std_ptr = (double *) std.request().ptr;
+    auto std = std_calc(prices, periods, false);
+    const auto *std_ptr = (T *) std.request().ptr;
 
-    py::array_t<double> middle = py::array_t<double>(prices_buf.size);
-    py::array_t<double> lower = py::array_t<double>(prices_buf.size);
-    py::array_t<double> upper = py::array_t<double>(prices_buf.size);
-    double *middle_ptr = (double *) middle.request().ptr;
-    double *lower_ptr = (double *) lower.request().ptr;
-    double *upper_ptr = (double *) upper.request().ptr;
+    auto middle = py::array_t<T>(prices_buf.size);
+    auto lower = py::array_t<T>(prices_buf.size);
+    auto upper = py::array_t<T>(prices_buf.size);
+    auto *middle_ptr = (T *) middle.request().ptr;
+    auto *lower_ptr = (T *) lower.request().ptr;
+    auto *upper_ptr = (T *) upper.request().ptr;
 
     init_nan(middle_ptr, size);
     init_nan(lower_ptr, size);
@@ -128,25 +86,27 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<double>>
     @param deviation (int): Number of deviations from ema.
         Multiplied with atr.
  */
-std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<double>>
-    kc_calc(const py::array_t<double> prices, const py::array_t<double> highs, 
-            const py::array_t<double> lows, const int period, const int period_atr, const int deviation) {
+template <typename T>
+std::tuple<py::array_t<T>, py::array_t<T>, py::array_t<T>>
+    kc_calc(const py::array_t<T> prices, const py::array_t<T> highs, 
+            const py::array_t<T> lows, const int period, const int period_atr, 
+            const int deviation) {
 
         py::buffer_info prices_buf = prices.request();
         const int size = prices_buf.shape[0];
         
-        py::array_t<double> lower = py::array_t<double>(prices_buf.size);
-        py::array_t<double> upper = py::array_t<double>(prices_buf.size);
-        double *lower_ptr = (double *) lower.request().ptr;
-        double *upper_ptr = (double *) upper.request().ptr;
+        auto lower = py::array_t<T>(prices_buf.size);
+        auto upper = py::array_t<T>(prices_buf.size);
+        auto *lower_ptr = (T *) lower.request().ptr;
+        auto *upper_ptr = (T *) upper.request().ptr;
     
         init_nan(lower_ptr, size);
         init_nan(upper_ptr, size);
 
-        py::array_t<double> middle = ema_calc(prices, period);
-        py::array_t<double> atr = atr_calc(prices, highs, lows, period_atr);
-        double *middle_ptr = (double *) middle.request().ptr;
-        double *atr_ptr = (double *) atr.request().ptr;
+        auto middle = ema_calc(prices, period);
+        auto atr = atr_calc(prices, highs, lows, period_atr);
+        auto *middle_ptr = (T *) middle.request().ptr;
+        auto *atr_ptr = (T *) atr.request().ptr;
         
         // If period_atr is greater than period, subtraction with NaN values
         // will happen, however it is fine for now since it will also result in NaNs.
@@ -154,7 +114,7 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<double>>
             lower_ptr[idx] = middle_ptr[idx] - (deviation * atr_ptr[idx]);
             upper_ptr[idx] = middle_ptr[idx] + (deviation * atr_ptr[idx]);
         }
-        middle_ptr[period-1] = std::numeric_limits<double>::quiet_NaN();
+        middle_ptr[period-1] = std::numeric_limits<T>::quiet_NaN();
         return std::make_tuple(upper, middle, lower);
 }   
 
@@ -174,29 +134,30 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<double>>
     can't be calcualted (since it doesn't exist any values before the first), and hence
     one more NaN is included in the returned array.
  */
-py::array_t<double> atr_calc(const py::array_t<double> prices, 
-        const py::array_t<double> highs, const py::array_t<double> lows, 
+template <typename T>
+py::array_t<T> atr_calc(const py::array_t<T> prices, 
+        const py::array_t<T> highs, const py::array_t<T> lows, 
         const int periods) {
 
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
 
-    double *highs_ptr = (double *) highs.request().ptr;
-    double *lows_ptr = (double *) lows.request().ptr;
+    auto *highs_ptr = (T *) highs.request().ptr;
+    auto *lows_ptr = (T *) lows.request().ptr;
     
-    py::array_t<double> tr = py::array_t<double>(prices_buf.size);
-    py::array_t<double> atr = py::array_t<double>(prices_buf.size);
-    double *tr_ptr = (double *) tr.request().ptr;
-    double *atr_ptr = (double *) atr.request().ptr;
+    auto tr = py::array_t<T>(prices_buf.size);
+    auto atr = py::array_t<T>(prices_buf.size);
+    auto *tr_ptr = (T *) tr.request().ptr;
+    auto *atr_ptr = (T *) atr.request().ptr;
     
     init_nan(tr_ptr, size);
     init_nan(atr_ptr, size);
 
     for (int idx = 1; idx < size; ++idx) {
-        double condition1 = highs_ptr[idx] - lows_ptr[idx];
-        double condition2 = abs(highs_ptr[idx] - prices_ptr[idx-1]);
-        double condition3 = abs(lows_ptr[idx] - prices_ptr[idx-1]);
+        T condition1 = highs_ptr[idx] - lows_ptr[idx];
+        T condition2 = abs(highs_ptr[idx] - prices_ptr[idx-1]);
+        T condition3 = abs(lows_ptr[idx] - prices_ptr[idx-1]);
         tr_ptr[idx] = std::max({condition1, condition2, condition3});
 
         if (idx == periods) {
@@ -224,30 +185,31 @@ py::array_t<double> atr_calc(const py::array_t<double> prices,
 
  */
 
-py::array_t<double> cv_calc(const py::array_t<double> highs,
-   const py::array_t<double> lows, const int period, const int smoothing_period) {
+template <typename T>
+py::array_t<T> cv_calc(const py::array_t<T> highs,
+   const py::array_t<T> lows, const int period, const int smoothing_period) {
 
    //std::vector<double> diff(highs.size());
    //std::vector<double> cv(highs.size(), std::numeric_limits<double>::quiet_NaN());
     
     py::buffer_info highs_buf = highs.request();
     const int size = highs_buf.shape[0];
-    double *highs_ptr = (double *) highs_buf.ptr;
-    double *lows_ptr = (double *) lows.request().ptr;
+    auto *highs_ptr = (T *) highs_buf.ptr;
+    auto *lows_ptr = (T *) lows.request().ptr;
     
-    py::array_t<double> diff = py::array_t<double>(highs_buf.size);
-    double *diff_ptr = (double *) diff.request().ptr;
+    auto diff = py::array_t<T>(highs_buf.size);
+    auto *diff_ptr = (T*) diff.request().ptr;
 
     // Get difference between high and lows.
     std::transform(highs_ptr, highs_ptr+size, lows_ptr, diff_ptr,
-    std::minus<double>());
+        std::minus<T>());
 
     // Calculate the ema for the differences.
-    py::array_t<double> ema = ema_calc(diff, period);
-    double *ema_ptr = (double *) ema.request().ptr;
+    auto ema = ema_calc(diff, period);
+    auto *ema_ptr = (T *) ema.request().ptr;
         
-    py::array_t<double> cv = py::array_t<double>(highs_buf.size);
-    double *cv_ptr = (double *) cv.request().ptr;
+    auto cv = py::array_t<T>(highs_buf.size);
+    auto *cv_ptr = (T *) cv.request().ptr;
     init_nan(cv_ptr, size);
 
     for (int idx = period + smoothing_period - 2; idx < size; ++idx) {
@@ -294,11 +256,18 @@ std::vector<double> sse_calc(std::vector<double> prices, std::vector<double> hig
 
 PYBIND11_MODULE(_volatility, m) {
 
-    m.def("std_calc", &std_calc, "Standard deviation calculations");
-    m.def("bbands_calc", &bbands_calc, "Bollinger bands calculations");
-    m.def("kc_calc", &kc_calc, "Keltner Channels");
-    m.def("atr_calc", &atr_calc, "Average True Range calculations");
-    m.def("cv_calc", &cv_calc, "Chaikin Volatility");
+    m.def("bbands_calc", &bbands_calc<double>, "Bollinger bands calculations");
+    m.def("bbands_calc", &bbands_calc<float>, "Bollinger bands calculations");
+
+    m.def("kc_calc", &kc_calc<double>, "Keltner Channels");
+    m.def("kc_calc", &kc_calc<float>, "Keltner Channels");
+
+    m.def("atr_calc", &atr_calc<double>, "Average True Range calculations");
+    m.def("atr_calc", &atr_calc<float>, "Average True Range calculations");
+
+    m.def("cv_calc", &cv_calc<double>, "Chaikin Volatility");
+    m.def("cv_calc", &cv_calc<float>, "Chaikin Volatility");
+
     //m.def("sse_calc", &sse_calc, "");
 
 }

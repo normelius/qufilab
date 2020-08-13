@@ -8,32 +8,39 @@
 
 namespace py = pybind11;
 
-py::array_t<double> acdi_calc(const py::array_t<double> price,
-        const py::array_t<double> highs, 
-        const py::array_t<double> lows,
-        const py::array_t<double> volumes);
+template <typename T>
+py::array_t<T> acdi_calc(const py::array_t<T> price,
+        const py::array_t<T> highs, 
+        const py::array_t<T> lows,
+        const py::array_t<T> volumes);
 
-py::array_t<double> obv_calc(const py::array_t<double> price,
-        const py::array_t<double> volumes);
+template <typename T>
+py::array_t<T> obv_calc(const py::array_t<T> price,
+        const py::array_t<T> volumes);
 
-py::array_t<double> cmf_calc(
-        const py::array_t<double> price,
-        const py::array_t<double> highs, 
-        const py::array_t<double> lows,
-        const py::array_t<double> volumes,
+template <typename T>
+py::array_t<T> cmf_calc(
+        const py::array_t<T> price,
+        const py::array_t<T> highs, 
+        const py::array_t<T> lows,
+        const py::array_t<T> volumes,
         const int periods);
 
-py::array_t<double> ci_calc(
-        const py::array_t<double> price,
-        const py::array_t<double> highs, 
-        const py::array_t<double> lows,
-        const py::array_t<double> volumes);
+template <typename T>
+py::array_t<T> ci_calc(
+        const py::array_t<T> price,
+        const py::array_t<T> highs, 
+        const py::array_t<T> lows,
+        const py::array_t<T> volumes);
 
-py::array_t<double> pvi_calc(
-        const py::array_t<double> price,
-        const py::array_t<double> volumes);
+template <typename T>
+py::array_t<T> pvi_calc(
+        const py::array_t<T> price,
+        const py::array_t<T> volumes);
 
-py::array_t<double> nvi_calc(
-        const py::array_t<double> price,
-        const py::array_t<double> volumes);
+template <typename T>
+py::array_t<T> nvi_calc(
+        const py::array_t<T> price,
+        const py::array_t<T> volumes);
+
 #endif

@@ -27,22 +27,23 @@ namespace py = pybind11;
  * Using normalization by default.
 */
 
-py::array_t<double> std_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> std_calc(const py::array_t<T> prices,
          const int period, const bool normalize) {
 
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
 
-    py::array_t<double> sma = sma_calc(prices, period);
-    double *sma_ptr = (double *) sma.request().ptr;
+    auto sma = sma_calc(prices, period);
+    auto *sma_ptr = (T *) sma.request().ptr;
 
-    py::array_t<double> std = py::array_t<double>(prices_buf.size);
-    double *std_ptr = (double *) std.request().ptr;
+    auto std = py::array_t<T>(prices_buf.size);
+    auto *std_ptr = (T *) std.request().ptr;
     init_nan(std_ptr, size);
 
     for (int ii = 0; ii < size - period+ 1; ii++) {
-        double temp = 0;
+        auto temp = 0;
 
         for (int idx = ii; idx < period+ ii; idx++) {
             temp += pow((prices_ptr[idx] - sma_ptr[ii+period-1]), 2);
@@ -68,18 +69,19 @@ py::array_t<double> std_calc(const py::array_t<double> prices,
  *
  * Calculates the variance. 
 */
-py::array_t<double> var_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> var_calc(const py::array_t<T> prices,
          const int period, const bool normalize) {
 
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
 
-    py::array_t<double> sma = sma_calc(prices, period);
-    double *sma_ptr = (double *) sma.request().ptr;
+    auto sma = sma_calc(prices, period);
+    auto *sma_ptr = (T *) sma.request().ptr;
 
-    py::array_t<double> var = py::array_t<double>(prices_buf.size);
-    double *var_ptr = (double *) var.request().ptr;
+    auto var = py::array_t<T>(prices_buf.size);
+    auto *var_ptr = (T *) var.request().ptr;
     init_nan(var_ptr, size);
 
     int adjust_nan = 0;
@@ -94,7 +96,7 @@ py::array_t<double> var_calc(const py::array_t<double> prices,
     }
 
     for (int ii = 0 + adjust_nan; ii < size - period + 1; ii++) {
-        double temp = 0;
+        T temp = 0;
 
         for (int idx = ii; idx < period+ ii; idx++) {
             temp += pow((prices_ptr[idx] - sma_ptr[ii+period-1]), 2);
@@ -108,7 +110,6 @@ py::array_t<double> var_calc(const py::array_t<double> prices,
             temp /= (period);
         }
   
-        //temp = sqrt(temp);
         var_ptr[ii+period-1] = temp;
     }
 
@@ -120,21 +121,23 @@ py::array_t<double> var_calc(const py::array_t<double> prices,
  *
  * Calculates the covariance between one price array and another.. 
 */
-py::array_t<double> cov_calc(const py::array_t<double> prices, const py::array_t<double> market,
+
+template <typename T>
+py::array_t<T> cov_calc(const py::array_t<T> prices, const py::array_t<T> market,
          const int period, const bool normalize) {
 
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
-    double *market_ptr = (double *) market.request().ptr;
+    auto *market_ptr = (T *) market.request().ptr;
 
-    py::array_t<double> sma = sma_calc(prices, period);
-    py::array_t<double> sma_market = sma_calc(market, period);
-    double *sma_ptr = (double *) sma.request().ptr;
-    double *sma_market_ptr = (double *) sma_market.request().ptr;
+    auto sma = sma_calc(prices, period);
+    auto sma_market = sma_calc(market, period);
+    auto *sma_ptr = (T *) sma.request().ptr;
+    auto *sma_market_ptr = (T *) sma_market.request().ptr;
 
-    py::array_t<double> cov = py::array_t<double>(prices_buf.size);
-    double *cov_ptr = (double *) cov.request().ptr;
+    auto cov = py::array_t<T>(prices_buf.size);
+    auto *cov_ptr = (T *) cov.request().ptr;
     init_nan(cov_ptr, size);
     
     int adjust_nan = 0;
@@ -149,7 +152,7 @@ py::array_t<double> cov_calc(const py::array_t<double> prices, const py::array_t
     }
 
     for (int ii = 0 + adjust_nan; ii < size - period+ 1; ii++) {
-        double temp = 0;
+        T temp = 0;
 
         for (int idx = ii; idx < period + ii; idx++) {
             temp += ((prices_ptr[idx] - sma_ptr[ii+period-1]) * 
@@ -184,25 +187,26 @@ py::array_t<double> cov_calc(const py::array_t<double> prices, const py::array_t
  * is the market that serves as the comparison.
  *
  */
-py::array_t<double> beta_calc(const py::array_t<double> prices, const py::array_t<double> market,
+template <typename T>
+py::array_t<T> beta_calc(const py::array_t<T> prices, const py::array_t<T> market,
         const int period, const bool var_normalize) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
     
-    py::array_t<double> prices_pct = pct_change_calc(prices, 1);
-    py::array_t<double> market_pct = pct_change_calc(market, 1);
+    auto prices_pct = pct_change_calc(prices, 1);
+    auto market_pct = pct_change_calc(market, 1);
 
     // Calculate the variance for the market.
-    py::array_t<double> var = var_calc(market_pct, period, var_normalize);
-    double *var_ptr = (double *) var.request().ptr;
+    auto var = var_calc(market_pct, period, var_normalize);
+    auto *var_ptr = (T *) var.request().ptr;
 
     // Calculate covariance between price and market.
-    py::array_t<double> cov = cov_calc(prices_pct, market_pct, period, false);
-    double *cov_ptr = (double *) cov.request().ptr;
+    auto cov = cov_calc(prices_pct, market_pct, period, false);
+    auto *cov_ptr = (T *) cov.request().ptr;
     
-    py::array_t<double> beta = py::array_t<double>(prices_buf.size);
-    double *beta_ptr = (double *) beta.request().ptr;
+    auto beta = py::array_t<T>(prices_buf.size);
+    auto *beta_ptr = (T *) beta.request().ptr;
     init_nan(beta_ptr, size);
 
     for (int idx = period; idx < size; ++idx) {
@@ -212,13 +216,14 @@ py::array_t<double> beta_calc(const py::array_t<double> prices, const py::array_
     return beta;
 }
 
-py::array_t<double> pct_change_calc(const py::array_t<double> prices, const int period) {
+template <typename T>
+py::array_t<T> pct_change_calc(const py::array_t<T> prices, const int period) {
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
 
-    py::array_t<double> pct_change = py::array_t<double>(prices_buf.size);
-    double *pct_change_ptr = (double *) pct_change.request().ptr;
+    auto pct_change = py::array_t<T>(prices_buf.size);
+    auto *pct_change_ptr = (T *) pct_change.request().ptr;
     init_nan(pct_change_ptr, size);
 
     for (int idx = period; idx < size; ++idx) {
@@ -230,9 +235,18 @@ py::array_t<double> pct_change_calc(const py::array_t<double> prices, const int 
 }
 
 PYBIND11_MODULE(_stat, m) {
-    m.def("std_calc", &std_calc, "Standard Deviation");
-    m.def("var_calc", &var_calc, "Variance");
-    m.def("cov_calc", &cov_calc, "Covariance");
-    m.def("beta_calc", &beta_calc, "Beta");
-    m.def("pct_change_calc", &pct_change_calc, "Percentage change");
+    m.def("std_calc", &std_calc<double>, "Standard Deviation");
+    m.def("std_calc", &std_calc<float>, "Standard Deviation");
+
+    m.def("var_calc", &var_calc<double>, "Variance");
+    m.def("var_calc", &var_calc<float>, "Variance");
+
+    m.def("cov_calc", &cov_calc<double>, "Covariance");
+    m.def("cov_calc", &cov_calc<float>, "Covariance");
+
+    m.def("beta_calc", &beta_calc<double>, "Beta");
+    m.def("beta_calc", &beta_calc<float>, "Beta");
+
+    m.def("pct_change_calc", &pct_change_calc<double>, "Percentage change");
+    m.def("pct_change_calc", &pct_change_calc<float>, "Percentage change");
 }

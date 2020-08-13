@@ -8,24 +8,25 @@
 
 namespace py = pybind11;
 
-std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<double>>
-    bbands_calc(const py::array_t<double> prices, const int periods, 
+template <typename T>
+std::tuple<py::array_t<T>, py::array_t<T>, py::array_t<T>>
+    bbands_calc(const py::array_t<T> prices, const int periods, 
             const int deviations);
 
-std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<double>>
-    kc_calc(const py::array_t<double> prices,
-            const py::array_t<double> highs, const py::array_t<double> lows,
+template <typename T>
+std::tuple<py::array_t<T>, py::array_t<T>, py::array_t<T>>
+    kc_calc(const py::array_t<T> prices,
+            const py::array_t<T> highs, const py::array_t<T> lows,
             const int period, const int period_atr, const int deviation);
 
-py::array_t<double> std_calc(const py::array_t<double> prices, 
-        const int periods, const bool normalize);
-
-py::array_t<double> atr_calc(const py::array_t<double> prices,
-        const py::array_t<double> highs, const py::array_t<double>
+template <typename T>
+py::array_t<T> atr_calc(const py::array_t<T> prices,
+        const py::array_t<T> highs, const py::array_t<T>
         lows, const int periods);
 
-py::array_t<double> cv_calc(const py::array_t<double> highs,
-        const py::array_t<double> lows, const int period,
+template <typename T>
+py::array_t<T> cv_calc(const py::array_t<T> highs,
+        const py::array_t<T> lows, const int period,
         const int smoothing_perid);
 
 #endif

@@ -8,20 +8,25 @@
 
 namespace py = pybind11;
 
-py::array_t<double> std_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> std_calc(const py::array_t<T> prices,
         const int period, const bool normalize);
 
-py::array_t<double> var_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> var_calc(const py::array_t<T> prices,
         const int period, const bool normalize);
 
-py::array_t<double> cov_calc(const py::array_t<double> prices,
-        const py::array_t<double> market, const int period, 
+template <typename T>
+py::array_t<T> cov_calc(const py::array_t<T> prices,
+        const py::array_t<T> market, const int period, 
         const bool normalize);
 
-py::array_t<double> beta_calc(const py::array_t<double> prices,
-        const py::array_t<double> market, const int period, 
+template <typename T>
+py::array_t<T> beta_calc(const py::array_t<T> prices,
+        const py::array_t<T> market, const int period, 
         const bool var_normalize);
 
-py::array_t<double> pct_change_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> pct_change_calc(const py::array_t<T> prices,
         const int period);
 #endif
