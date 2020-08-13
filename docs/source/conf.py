@@ -31,7 +31,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'numpydoc',
         'sphinx.ext.extlinks', 'autodocsumm']
 
 # Uncomment line below if source should be included. 
-extensions.append('sphinx.ext.linkcode')
+#extensions.append('sphinx.ext.linkcode')
 def linkcode_resolve(domain, info):
     if domain != 'py':
         return None
@@ -45,7 +45,7 @@ def linkcode_resolve(domain, info):
     
     # Parse indicators.yaml to find what script the implementation of 
     # fullname is in.
-    with open("indicators.yaml", "r") as stream:
+    with open("source/indicators.yaml", "r") as stream:
         try:
             data = yaml.safe_load(stream)
             for indicator_type, indicators in data.items():
@@ -55,7 +55,7 @@ def linkcode_resolve(domain, info):
 
         except yaml.YAMLError as exc:
             print(exc)
-    
+
     # Open implementation file and check each line for start and end of implementation
     # Start is given by "Implementation of SMA" for example, and end is given by
     # "return sma", for example.
