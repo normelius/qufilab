@@ -9,59 +9,74 @@
 
 namespace py = pybind11;
 
-py::array_t<double> rsi_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> rsi_calc(const py::array_t<T> prices,
         const int periods, const std::string rsi_type);
 
-std::tuple<py::array_t<double>, py::array_t<double>> 
-    macd_calc(const py::array_t<double> prices);
+template <typename T>
+std::tuple<py::array_t<T>, py::array_t<T>> 
+    macd_calc(const py::array_t<T> prices);
 
-py::array_t<double> willr_calc(const py::array_t<double> prices,
-        const py::array_t<double> highs,
-        const py::array_t<double> lows,
+template <typename T>
+py::array_t<T> willr_calc(const py::array_t<T> prices,
+        const py::array_t<T> highs,
+        const py::array_t<T> lows,
         const int periods);
 
-std::tuple<std::vector<double>, std::vector<double>> 
-    stochastic_calc(const std::vector<double> prices,
-        const std::vector<double> highs,
-        const std::vector<double> lows,
+template <typename T>
+std::tuple<std::vector<T>, std::vector<T>> 
+    stochastic_calc(const std::vector<T> prices,
+        const std::vector<T> highs,
+        const std::vector<T> lows,
         std::string mode, const int period, 
         std::string method);
 
-py::array_t<double> roc_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> roc_calc(const py::array_t<T> prices,
         const int periods);
 
-py::array_t<double> vpt_calc(const py::array_t<double> prices,
-        const py::array_t<double> volumes);
+template <typename T>
+py::array_t<T> vpt_calc(const py::array_t<T> prices,
+        const py::array_t<T> volumes);
 
-py::array_t<double> mi_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> mi_calc(const py::array_t<T> prices,
         const int periods);
 
-py::array_t<double> cci_calc(const py::array_t<double> close,
-        const py::array_t<double> high, const py::array_t<double> low,
+template <typename T>
+py::array_t<T> cci_calc(const py::array_t<T> close,
+        const py::array_t<T> high, const py::array_t<T> low,
         const int period);
 
-py::array_t<double>
-        aroon_calc(const py::array_t<double> high, 
-        const py::array_t<double> low, const int period);
+template <typename T>
+py::array_t<T>
+        aroon_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const int period);
 
-std::vector<double> tsi_calc(const std::vector<double> close,
+template <typename T>
+std::vector<T> tsi_calc(const std::vector<T> close,
         const int period, const int period_double);
 
-py::array_t<double> apo_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> apo_calc(const py::array_t<T> prices,
         const int period_slow, const int period_fast, const std::string ma);
 
-py::array_t<double> bop_calc(const py::array_t<double> high,
-    const py::array_t<double> low, const py::array_t<double> open,
-    const py::array_t<double> close);
+template <typename T>
+py::array_t<T> bop_calc(const py::array_t<T> high,
+    const py::array_t<T> low, const py::array_t<T> open,
+    const py::array_t<T> close);
 
-py::array_t<double> cmo_calc(const py::array_t<double> close,
+template <typename T>
+py::array_t<T> cmo_calc(const py::array_t<T> close,
         const int period);
 
-py::array_t<double> mfi_calc(const py::array_t<double> high,
-    const py::array_t<double> low, const py::array_t<double> close,
-    const py::array_t<double> volume, const int period);
+template <typename T>
+py::array_t<T> mfi_calc(const py::array_t<T> high,
+    const py::array_t<T> low, const py::array_t<T> close,
+    const py::array_t<T> volume, const int period);
 
-py::array_t<double> ppo_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> ppo_calc(const py::array_t<T> prices,
         const int period_fast, const int period_slow, 
         const std::string ma_type);
 

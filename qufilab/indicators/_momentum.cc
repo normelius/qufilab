@@ -28,24 +28,22 @@ namespace py = pybind11;
 *   @param rsi_type (std::string): Specifies how the following gains/losses 
 *       shall be calculated. 'standard' or 'smoothed'.
 */
-py::array_t<double> rsi_calc(const py::array_t<double> prices,
+template <typename T>
+py::array_t<T> rsi_calc(const py::array_t<T> prices,
         const int periods, const std::string rsi_type) {
 
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
     
-    py::array_t<double> rsi = py::array_t<double>(prices_buf.size);
-    py::buffer_info rsi_buf = rsi.request();
-    double* rsi_ptr = (double *) rsi_buf.ptr;
+    auto rsi = py::array_t<T>(prices_buf.size);
+    auto *rsi_ptr = (T *) rsi.request().ptr;
 
-    py::array_t<double> gains = py::array_t<double>(prices_buf.size);
-    py::buffer_info gains_buf = gains.request();
-    double* gains_ptr = (double *) gains_buf.ptr;
+    auto gains = py::array_t<T>(prices_buf.size);
+    auto *gains_ptr = (T *) gains.request().ptr;
 
-    py::array_t<double> losses = py::array_t<double>(prices_buf.size);
-    py::buffer_info losses_buf = losses.request();
-    double* losses_ptr = (double *) losses_buf.ptr;
+    auto losses = py::array_t<T>(prices_buf.size);
+    auto *losses_ptr = (T*) losses.request().ptr;
 
     init_nan(rsi_ptr, size);
     init_zeros(gains_ptr, size);
@@ -53,7 +51,7 @@ py::array_t<double> rsi_calc(const py::array_t<double> prices,
     
     // Calculate average gains and losses vector, size -1 compared to prices.
     for (int idx = 1; idx < size; ++idx) {
-        double diff = prices_ptr[idx] - prices_ptr[idx-1];
+        T diff = prices_ptr[idx] - prices_ptr[idx-1];
         if (diff > 0) {
             gains_ptr[idx] = diff;
         }
@@ -64,8 +62,8 @@ py::array_t<double> rsi_calc(const py::array_t<double> prices,
     }
     
     // First average gain/loss.
-    double AG = 0.0;
-    double AL = 0.0;
+    T AG = 0.0;
+    T AL = 0.0;
 
     for (int idx = 1; idx <= periods; ++idx) {
         AG += gains_ptr[idx];
@@ -104,33 +102,34 @@ py::array_t<double> rsi_calc(const py::array_t<double> prices,
 *       filled with NaNs.
 */
 
-std::tuple<py::array_t<double>, py::array_t<double>> macd_calc(const py::array_t<double> prices) {
+template <typename T>
+std::tuple<py::array_t<T>, py::array_t<T>> macd_calc(const py::array_t<T> prices) {
     
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     
-    py::array_t<double> macd = py::array_t<double>(prices_buf.size);
-    py::array_t<double> signal = py::array_t<double>(prices_buf.size);
+    auto macd = py::array_t<T>(prices_buf.size);
+    auto signal = py::array_t<T>(prices_buf.size);
 
-    double *macd_ptr = (double *) macd.request().ptr;
-    double *signal_ptr = (double *) signal.request().ptr;
+    auto *macd_ptr = (T *) macd.request().ptr;
+    auto *signal_ptr = (T *) signal.request().ptr;
 
     init_nan(macd_ptr, size);
     init_nan(signal_ptr, size);
 
-    py::array_t<double> ema26 = ema_calc(prices, 26);
-    py::array_t<double> ema12 = ema_calc(prices, 12);
-    double *ema26_ptr = (double *) ema26.request().ptr;
-    double *ema12_ptr = (double *) ema12.request().ptr;
+    py::array_t<T> ema26 = ema_calc(prices, 26);
+    py::array_t<T> ema12 = ema_calc(prices, 12);
+    auto *ema26_ptr = (T *) ema26.request().ptr;
+    auto *ema12_ptr = (T *) ema12.request().ptr;
     
     for (int idx = 25; idx < size; ++idx) {
         macd_ptr[idx] = ema12_ptr[idx] - ema26_ptr[idx];
     }
     
-    double k = (double) 2 / (10);
+    T k = (T) 2 / (10);
     // SMA for the first signal value.
-    double prev = std::accumulate(macd_ptr + 25, macd_ptr + 34, 0.0) / 9;
+    T prev = std::accumulate(macd_ptr + 25, macd_ptr + 34, 0.0) / 9;
     signal_ptr[33] = prev;
     
     // EMA for the rest.
@@ -149,25 +148,26 @@ std::tuple<py::array_t<double>, py::array_t<double>> macd_calc(const py::array_t
 *   @param lows (vector<double>): Vector with low prices.
 *   @param periods (int): Number of periods.
  */
-py::array_t<double> willr_calc(const py::array_t<double> prices,
-        const py::array_t<double> highs, const py::array_t<double> lows,
+template <typename T>
+py::array_t<T> willr_calc(const py::array_t<T> prices,
+        const py::array_t<T> highs, const py::array_t<T> lows,
         const int periods) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
 
-    double *prices_ptr = (double *) prices_buf.ptr;
-    double *highs_ptr = (double *) highs.request().ptr;
-    double *lows_ptr = (double *) lows.request().ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
+    auto *highs_ptr = (T *) highs.request().ptr;
+    auto *lows_ptr = (T *) lows.request().ptr;
     
-    auto william = py::array_t<double>(prices_buf.size);
-    double *will_ptr = (double *) william.request().ptr;
+    auto william = py::array_t<T>(prices_buf.size);
+    auto *will_ptr = (T *) william.request().ptr;
 
     init_nan(will_ptr, size);
 
     for (size_t idx = periods-1; idx < size; ++idx) {
-        double max = *std::max_element(highs_ptr + idx - periods + 1, highs_ptr + idx + 1);
-        double min = *std::min_element(lows_ptr + idx - periods + 1, lows_ptr + idx + 1);
+        T max = *std::max_element(highs_ptr + idx - periods + 1, highs_ptr + idx + 1);
+        T min = *std::min_element(lows_ptr + idx - periods + 1, lows_ptr + idx + 1);
         will_ptr[idx] = ((max - prices_ptr[idx]) / (max - min)) * -100.0;
     }
 
@@ -234,17 +234,19 @@ std::tuple<std::vector<double>, std::vector<double>> stochastic_calc(const std::
 *   @param prices (vector<double>): Vector with closing prices.
 *   @param periods (int): Number of periods.
 */
-py::array_t<double> roc_calc(const py::array_t<double> prices, const int periods) {
+template <typename T>
+py::array_t<T> roc_calc(const py::array_t<T> prices, const int periods) {
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
     
-    auto roc = py::array_t<double>(prices_buf.size);
-    double *roc_ptr = (double *) roc.request().ptr;
+    auto roc = py::array_t<T>(prices_buf.size);
+    auto *roc_ptr = (T *) roc.request().ptr;
     init_nan(roc_ptr, size);
     
     for (int idx = periods; idx < size; ++idx) {
-        roc_ptr[idx] = ((prices_ptr[idx] - prices_ptr[idx-periods]) / prices_ptr[idx-periods]) * 100.0;
+        roc_ptr[idx] = ((prices_ptr[idx] - prices_ptr[idx-periods]) 
+                / prices_ptr[idx-periods]) * 100.0;
     }
 
     return roc;
@@ -257,17 +259,18 @@ py::array_t<double> roc_calc(const py::array_t<double> prices, const int periods
 *   @param prices (vector<double>): Vector with closing prices.
 *   @param volumes (vector<double>): Vector with volume prices.
  */
-py::array_t<double> vpt_calc(const py::array_t<double> prices, 
-        const py::array_t<double> volumes) {
+template <typename T>
+py::array_t<T> vpt_calc(const py::array_t<T> prices, 
+        const py::array_t<T> volumes) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
 
-    auto vpt = py::array_t<double>(prices_buf.size);
+    auto vpt = py::array_t<T>(prices_buf.size);
 
-    double *prices_ptr = (double *) prices_buf.ptr;
-    double *volumes_ptr = (double *) volumes.request().ptr;
-    double *vpt_ptr = (double *) vpt.request().ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
+    auto *volumes_ptr = (T *) volumes.request().ptr;
+    auto *vpt_ptr = (T *) vpt.request().ptr;
 
     init_nan(vpt_ptr, size);
     // Need a first value for the vpt.
@@ -287,18 +290,19 @@ py::array_t<double> vpt_calc(const py::array_t<double> prices,
 *   @param prices (vector<double>): Vector with closing prices.
 *   @param periods (int): Number of periods.
 */
-py::array_t<double> mi_calc(const py::array_t<double> prices, 
+template <typename T>
+py::array_t<T> mi_calc(const py::array_t<T> prices, 
         const int periods) {
 
     py::buffer_info prices_buf = prices.request();
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     const int size = prices_buf.shape[0];
     
-    auto momentum = py::array_t<double>(prices_buf.size);
-    double *momentum_ptr = (double *) momentum.request().ptr;
+    auto momentum = py::array_t<T>(prices_buf.size);
+    auto *momentum_ptr = (T *) momentum.request().ptr;
     init_nan(momentum_ptr, size);
 
-    for (size_t idx = periods; idx < prices.size(); ++idx) {
+    for (int idx = periods; idx < prices.size(); ++idx) {
         momentum_ptr[idx] = prices_ptr[idx] - prices_ptr[idx-periods];
     }
 
@@ -321,36 +325,37 @@ py::array_t<double> mi_calc(const py::array_t<double> prices,
  *   @param period (int): Number of periods.
  *   @return: Vector with cci-values.
  */
-py::array_t<double> cci_calc(const py::array_t<double> close,
-        const py::array_t<double> high, const py::array_t<double> low,
+template <typename T>
+py::array_t<T> cci_calc(const py::array_t<T> close,
+        const py::array_t<T> high, const py::array_t<T> low,
         const int period) {
 
     py::buffer_info close_buf = close.request();
-    double *close_ptr = (double *) close_buf.ptr;
+    T *close_ptr = (T *) close_buf.ptr;
     const int size = close_buf.shape[0];
 
-    py::array_t<double> cci = py::array_t<double>(close_buf.size);
-    double *cci_ptr = (double *) cci.request().ptr;
-    double *high_ptr = (double *) high.request().ptr;
-    double *low_ptr = (double *) low.request().ptr;
+    auto cci = py::array_t<T>(close_buf.size);
+    auto *cci_ptr = (T *) cci.request().ptr;
+    auto *high_ptr = (T *) high.request().ptr;
+    auto *low_ptr = (T *) low.request().ptr;
     init_nan(cci_ptr, size);
 
-    py::array_t<double> tp = py::array_t<double>(close_buf.size);
-    double *tp_ptr = (double *) tp.request().ptr;
+    auto tp = py::array_t<T>(close_buf.size);
+    auto *tp_ptr = (T *) tp.request().ptr;
 
-    for (size_t idx = 0; idx < size; ++idx) {
+    for (int idx = 0; idx < size; ++idx) {
         tp_ptr[idx] = (close_ptr[idx] + high_ptr[idx] + low_ptr[idx]) / 3.0;
     }
 
-    py::array_t<double> tpsma = sma_calc(tp, period); // NEED TO CHANGE WHEN SMA HAS GOT NEW IMPLEMENTATION
-    double *tpsma_ptr = (double *) tpsma.request().ptr;
+    py::array_t<T> tpsma = sma_calc(tp, period);
+    auto *tpsma_ptr = (T *) tpsma.request().ptr;
 
-    const double constant = 0.015;
+    const T constant = 0.015;
 
-    for (size_t idx = period-1; idx < size; ++idx) {
+    for (int idx = period-1; idx < size; ++idx) {
         // Mean deviation
-        double mean_dev = 0.0;
-        for (size_t idx1 = idx-period+1; idx1 <= idx; ++idx1) {
+        T mean_dev = 0.0;
+        for (int idx1 = idx-period+1; idx1 <= idx; ++idx1) {
             mean_dev += abs(tpsma_ptr[idx] - tp_ptr[idx1]);
         }
 
@@ -370,29 +375,32 @@ py::array_t<double> cci_calc(const py::array_t<double> close,
  *   @param period (int): Number of periods.
  *   @return: Tuple with aroon-os, aroon-up, aroon-down.
  */
-py::array_t<double> aroon_calc(const py::array_t<double> high, 
-        const py::array_t<double> low, const int period) {
+template <typename T>
+py::array_t<T> aroon_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const int period) {
 
     py::buffer_info high_buf = high.request();
-    double *high_ptr = (double *) high.request().ptr;
-    double *low_ptr = (double *) low.request().ptr;
+    auto *high_ptr = (T *) high.request().ptr;
+    auto *low_ptr = (T *) low.request().ptr;
     
     const int size = high_buf.shape[0];
 
-    py::array_t<double> aroon = py::array_t<double>(high_buf.size);
-    double *aroon_ptr = (double *) aroon.request().ptr;
+    auto aroon = py::array_t<T>(high_buf.size);
+    auto *aroon_ptr = (T *) aroon.request().ptr;
 
     init_nan(aroon_ptr, size);
     
-    for (size_t idx = period; idx < size; ++idx) {
-        int max = std::distance(high_ptr, std::max_element(high_ptr + idx - period, high_ptr + idx + 1));
-        int min = std::distance(low_ptr, std::min_element(low_ptr + idx - period, low_ptr + idx + 1));
+    for (int idx = period; idx < size; ++idx) {
+        int max = std::distance(high_ptr, 
+                std::max_element(high_ptr + idx - period, high_ptr + idx + 1));
+        int min = std::distance(low_ptr, 
+                std::min_element(low_ptr + idx - period, low_ptr + idx + 1));
 
         int days_up = idx - max;
         int days_down = idx - min;
 
-        double aroon_up = ((double)(period - days_up) / period) * 100;
-        double aroon_down = ((double)(period - days_down) / period) * 100;
+        T aroon_up = ((T)(period - days_up) / period) * 100;
+        T aroon_down = ((T)(period - days_down) / period) * 100;
         aroon_ptr[idx] = aroon_up - aroon_down;
     }
     
@@ -414,14 +422,15 @@ py::array_t<double> aroon_calc(const py::array_t<double> high,
  *   @param ma (string): Type of moving average to be specified.
  *
  */
-py::array_t<double> apo_calc(const py::array_t<double> prices, const int period_slow,
+template <typename T>
+py::array_t<T> apo_calc(const py::array_t<T> prices, const int period_slow,
         const int period_fast, const std::string ma) {
 
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
 
-    py::array_t<double> ma_fast;
-    py::array_t<double> ma_slow; 
+    py::array_t<T> ma_fast;
+    py::array_t<T> ma_slow; 
     
     if (ma == "sma") {
         ma_fast = sma_calc(prices, period_fast);
@@ -433,11 +442,11 @@ py::array_t<double> apo_calc(const py::array_t<double> prices, const int period_
         ma_slow = ema_calc(prices, period_slow);
     }
 
-    double *ma_fast_ptr = (double *) ma_fast.request().ptr;
-    double *ma_slow_ptr = (double *) ma_slow.request().ptr;
+    auto *ma_fast_ptr = (T *) ma_fast.request().ptr;
+    auto *ma_slow_ptr = (T *) ma_slow.request().ptr;
 
-    py::array_t<double> apo = py::array_t<double>(prices_buf.size);
-    double *apo_ptr = (double *) apo.request().ptr;
+    auto apo = py::array_t<T>(prices_buf.size);
+    auto *apo_ptr = (T *) apo.request().ptr;
     init_nan(apo_ptr, size);
 
     for (int idx = period_slow-1; idx < size; ++idx) {
@@ -459,23 +468,24 @@ py::array_t<double> apo_calc(const py::array_t<double> prices, const int period_
  *   @param low (py::array_t<double>): Array with low prices.
  *
  */
-py::array_t<double> bop_calc(const py::array_t<double> high, const py::array_t<double> low,
-        const py::array_t<double> open, const py::array_t<double> close) {
+template <typename T>
+py::array_t<T> bop_calc(const py::array_t<T> high, const py::array_t<T> low,
+        const py::array_t<T> open, const py::array_t<T> close) {
     
     py::buffer_info close_buf = close.request();
     const int size = close_buf.shape[0];
 
-    double *high_ptr = (double *) high.request().ptr;
-    double *low_ptr = (double *) low.request().ptr;
-    double *open_ptr = (double *) open.request().ptr;
-    double *close_ptr = (double *) close_buf.ptr;
+    auto *high_ptr = (T *) high.request().ptr;
+    auto *low_ptr = (T *) low.request().ptr;
+    auto *open_ptr = (T *) open.request().ptr;
+    auto *close_ptr = (T *) close_buf.ptr;
     
-    py::array_t<double> bop = py::array_t<double>(close_buf.size);
-    double *bop_ptr = (double *) bop.request().ptr;
+    auto bop = py::array_t<T>(close_buf.size);
+    auto *bop_ptr = (T *) bop.request().ptr;
     init_zeros(bop_ptr, size);
 
     for (int idx = 0; idx < size; ++idx) {
-        double numerator = high_ptr[idx] - low_ptr[idx];
+        T numerator = high_ptr[idx] - low_ptr[idx];
         if (numerator > 0) {
             bop_ptr[idx] = (close_ptr[idx] - open_ptr[idx]) / numerator;
         }
@@ -498,29 +508,30 @@ py::array_t<double> bop_calc(const py::array_t<double> high, const py::array_t<d
  *   @param close (py::array_t<double>): Array with close prices.
  *   @param period (int): Number of periods.
  */
-py::array_t<double> cmo_calc(const py::array_t<double> close, const int period) {
+template <typename T>
+py::array_t<T> cmo_calc(const py::array_t<T> close, const int period) {
     py::buffer_info close_buf = close.request();
     const int size = close_buf.shape[0];
-    double *close_ptr = (double *) close_buf.ptr;
+    auto *close_ptr = (T *) close_buf.ptr;
     
-    py::array_t<double> cmo = py::array_t<double>(close_buf.size);
-    double *cmo_ptr = (double *) cmo.request().ptr;
+    auto cmo = py::array_t<T>(close_buf.size);
+    auto *cmo_ptr = (T *) cmo.request().ptr;
     init_nan(cmo_ptr, size);
 
-    py::array_t<double> diff_up = py::array_t<double>(close_buf.size);
-    py::array_t<double> diff_down = py::array_t<double>(close_buf.size);
-    double *diff_up_ptr = (double *) diff_up.request().ptr;
-    double *diff_down_ptr = (double *) diff_down.request().ptr;
+    auto diff_up = py::array_t<T>(close_buf.size);
+    auto diff_down = py::array_t<T>(close_buf.size);
+    auto *diff_up_ptr = (T *) diff_up.request().ptr;
+    auto *diff_down_ptr = (T *) diff_down.request().ptr;
+
     init_zeros(diff_up_ptr, size);
     init_zeros(diff_down_ptr, size);
     
-    double cmo_down = 0.0;
-    double cmo_up = 0.0;
+    T cmo_down = 0.0;
+    T cmo_up = 0.0;
 
     for (int idx = 1; idx < size; ++idx) {
-
         // Create the diff arrays.
-        double diff = close_ptr[idx] - close_ptr[idx-1];
+        T diff = close_ptr[idx] - close_ptr[idx-1];
         if (diff > 0.0) {
             diff_up_ptr[idx] = diff;
         }
@@ -565,34 +576,35 @@ py::array_t<double> cmo_calc(const py::array_t<double> close, const int period) 
  *   @param volume (py::array_t<double>): Array with volume prices.
  *   @param period (int): Number of periods.
  */
-py::array_t<double> mfi_calc(const py::array_t<double> high,
-      const py::array_t<double> low, const py::array_t<double> close,
-      const py::array_t<double> volume, const int period) {
+template <typename T>
+py::array_t<T> mfi_calc(const py::array_t<T> high,
+      const py::array_t<T> low, const py::array_t<T> close,
+      const py::array_t<T> volume, const int period) {
     
     py::buffer_info close_buf = close.request();
     const int size = close_buf.shape[0];
-    double *close_ptr = (double *) close_buf.ptr;
+    auto *close_ptr = (T *) close_buf.ptr;
 
-    double *high_ptr = (double *) high.request().ptr;
-    double *low_ptr = (double *) low.request().ptr;
-    double *volume_ptr = (double *) volume.request().ptr;
+    auto *high_ptr = (T *) high.request().ptr;
+    auto *low_ptr = (T *) low.request().ptr;
+    auto *volume_ptr = (T *) volume.request().ptr;
 
-    py::array_t<double> mfi = py::array_t<double>(close_buf.size);
-    double *mfi_ptr = (double *) mfi.request().ptr;
+    auto mfi = py::array_t<T>(close_buf.size);
+    auto *mfi_ptr = (T *) mfi.request().ptr;
     init_nan(mfi_ptr, size);
 
-    py::array_t<double> raw_down = py::array_t<double>(close_buf.size);
-    py::array_t<double> raw_up = py::array_t<double>(close_buf.size);
-    double *raw_down_ptr = (double *) raw_down.request().ptr;
-    double *raw_up_ptr = (double *) raw_up.request().ptr;
+    auto raw_down = py::array_t<T>(close_buf.size);
+    auto raw_up = py::array_t<T>(close_buf.size);
+    auto *raw_down_ptr = (T *) raw_down.request().ptr;
+    auto *raw_up_ptr = (T *) raw_up.request().ptr;
     init_zeros(raw_down_ptr, size);
     init_zeros(raw_up_ptr, size);
     
-    double raw_up_sum = 0.0;
-    double raw_down_sum = 0.0;
+    T raw_up_sum = 0.0;
+    T raw_down_sum = 0.0;
     for (int idx = 1; idx < size; ++idx) {
-        double tp = (double)(high_ptr[idx] + low_ptr[idx] + close_ptr[idx]) / 3;
-        double tp_prior = (double)(high_ptr[idx-1] + low_ptr[idx-1] + close_ptr[idx-1]) / 3;
+        T tp = (T)(high_ptr[idx] + low_ptr[idx] + close_ptr[idx]) / 3;
+        T tp_prior = (T)(high_ptr[idx-1] + low_ptr[idx-1] + close_ptr[idx-1]) / 3;
         
         // Increase the raw money flow. Save raw up/down since we need to remove these values
         // later on, when a new period stats.
@@ -615,9 +627,9 @@ py::array_t<double> mfi_calc(const py::array_t<double> high,
 
         // Calculate the MFI
         if (idx >= period) {
-            double mfr = raw_up_sum / raw_down_sum;
+            T mfr = raw_up_sum / raw_down_sum;
             if (raw_down_sum != 0) {
-                mfi_ptr[idx] = 100 - ((double)100 / (1 + mfr));
+                mfi_ptr[idx] = 100 - ((T)100 / (1 + mfr));
             }
         }
 
@@ -633,21 +645,21 @@ py::array_t<double> mfi_calc(const py::array_t<double> high,
 *   @param default_size (bool): Specify whether returned vector should be same length
 *       filled with NaNs.
 */
-
-py::array_t<double> ppo_calc(const py::array_t<double> prices, const int period_fast,
+template <typename T>
+py::array_t<T> ppo_calc(const py::array_t<T> prices, const int period_fast,
         const int period_slow, const std::string ma_type) {
     
     py::buffer_info prices_buf = prices.request();
     const int size = prices_buf.shape[0];
-    double *prices_ptr = (double *) prices_buf.ptr;
+    auto *prices_ptr = (T *) prices_buf.ptr;
     
-    py::array_t<double> ppo = py::array_t<double>(prices_buf.size);
-    double *ppo_ptr = (double *) ppo.request().ptr;
+    auto ppo = py::array_t<T>(prices_buf.size);
+    auto *ppo_ptr = (T *) ppo.request().ptr;
 
     init_nan(ppo_ptr, size);
 
-    py::array_t<double> ma_fast;
-    py::array_t<double> ma_slow;
+    py::array_t<T> ma_fast;
+    py::array_t<T> ma_slow;
     
     // Check which moving average.
     if (ma_type == "ema") {
@@ -660,8 +672,8 @@ py::array_t<double> ppo_calc(const py::array_t<double> prices, const int period_
         ma_slow = sma_calc(prices, period_slow);
     }
 
-    double *ma_slow_ptr = (double *) ma_slow.request().ptr;
-    double *ma_fast_ptr = (double *) ma_fast.request().ptr;
+    auto *ma_slow_ptr = (T *) ma_slow.request().ptr;
+    auto *ma_fast_ptr = (T *) ma_fast.request().ptr;
     
     for (int idx = 25; idx < size; ++idx) {
         ppo_ptr[idx] = ((ma_fast_ptr[idx] - ma_slow_ptr[idx]) / ma_slow_ptr[idx]) * 100;
@@ -669,8 +681,6 @@ py::array_t<double> ppo_calc(const py::array_t<double> prices, const int period_
 
     return ppo;
 }
-
-
 
 
 /*
@@ -713,19 +723,45 @@ std::vector<double> tsi_calc(const std::vector<double> close,
 */
 
 PYBIND11_MODULE(_momentum, m) {
-    m.def("rsi_calc", &rsi_calc, "RSI");
-    m.def("macd_calc", &macd_calc, "MACD");
-    m.def("willr_calc", &willr_calc, "William's R");
+    m.def("rsi_calc", &rsi_calc<double>, "RSI");
+    m.def("rsi_calc", &rsi_calc<float>, "RSI");
+
+    m.def("macd_calc", &macd_calc<double>, "MACD");
+    m.def("macd_calc", &macd_calc<float>, "MACD");
+
+    m.def("willr_calc", &willr_calc<double>, "William's R");
+    m.def("willr_calc", &willr_calc<float>, "William's R");
+
+    m.def("roc_calc", &roc_calc<double>, "Price Rate-of-Change");
+    m.def("roc_calc", &roc_calc<float>, "Price Rate-of-Change");
+
+    m.def("vpt_calc", &vpt_calc<double>, "Volume and Price Trend");
+    m.def("vpt_calc", &vpt_calc<float>, "Volume and Price Trend");
+
+    m.def("mi_calc", &mi_calc<double>, "Momentum Indicator");
+    m.def("mi_calc", &mi_calc<float>, "Momentum Indicator");
+
+    m.def("cci_calc", &cci_calc<double>, "Commodity Channel Index");
+    m.def("cci_calc", &cci_calc<float>, "Commodity Channel Index");
+
+    m.def("aroon_calc", &aroon_calc<double>, "Aroon Indicator");
+    m.def("aroon_calc", &aroon_calc<float>, "Aroon Indicator");
+
+    m.def("apo_calc", &apo_calc<double>, "Absolute Price Oscillator");
+    m.def("apo_calc", &apo_calc<float>, "Absolute Price Oscillator");
+
+    m.def("bop_calc", &bop_calc<double>, "Balance of Power");
+    m.def("bop_calc", &bop_calc<float>, "Balance of Power");
+
+    m.def("cmo_calc", &cmo_calc<double>, "Chande Momentum Indicator");
+    m.def("cmo_calc", &cmo_calc<float>, "Chande Momentum Indicator");
+
+    m.def("mfi_calc", &mfi_calc<double>, "Money Flow Index");
+    m.def("mfi_calc", &mfi_calc<float>, "Money Flow Index");
+
+    m.def("ppo_calc", &ppo_calc<double>, "Percentage Price Oscillator");
+    m.def("ppo_calc", &ppo_calc<float>, "Percentage Price Oscillator");
+
     //m.def("stochastic_calc", &stochastic_calc, "Stochastic Indicator");
-    m.def("roc_calc", &roc_calc, "Price Rate-of-Change");
-    m.def("vpt_calc", &vpt_calc, "Volume and Price Trend");
-    m.def("mi_calc", &mi_calc, "Momentum Indicator");
-    m.def("cci_calc", &cci_calc, "Commodity Channel Index");
-    m.def("aroon_calc", &aroon_calc, "Aroon Indicator");
-    m.def("apo_calc", &apo_calc, "Absolute Price Oscillator");
-    m.def("bop_calc", &bop_calc, "Balance of Power");
-    m.def("cmo_calc", &cmo_calc, "Chande Momentum Indicator");
-    m.def("mfi_calc", &mfi_calc, "Money Flow Index");
-    m.def("ppo_calc", &ppo_calc, "Percentage Price Oscillator");
     //m.def("tsi_calc", &tsi_calc, "True Strength Index");
 }
