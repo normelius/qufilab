@@ -19,8 +19,8 @@
 namespace py = pybind11;
 
 /*
-    Accumulation Distribution (ACDI)
-
+ * Implementation of ACDI.
+ *
  */
 template <typename T>
 py::array_t<T> acdi_calc(const py::array_t<T> prices,
@@ -56,7 +56,8 @@ py::array_t<T> acdi_calc(const py::array_t<T> prices,
 
 
 /*
-    On Balance Volume
+ * Implementation of OBV.
+ *
     @param (py::array_t<double>) prices: Vector with prices.
     @param (py::array_t<double>) volumes: Vector with volumes.
  */
@@ -94,7 +95,8 @@ py::array_t<T> obv_calc(const py::array_t<T> prices,
 
 
 /*
-    Chaikin Money FLow
+ * Implementation of CMF.
+ *
     @param (vector<float>) prices: Vector with closing prices.
     @param (vector<highs>) highs: Vector with high prices.
     @param (vector<lows>) lows: Vector with low prices.
@@ -139,7 +141,8 @@ py::array_t<T> cmf_calc(const py::array_t<T> prices,
 
 
 /*
-    Chaikin Indicator
+ * Implementation of CI.
+ *
     @param (py::array_t<double>) prices: Vector with closing prices.
     @param (py::array_t<double>) highs: Vector with high prices.
     @param (py::array_t<double>) lows: Vector with low prices.
@@ -175,7 +178,8 @@ py::array_t<T> ci_calc(const py::array_t<T> prices,
 }
 
 /*
- *  Positive Volume Index
+ * Implementation of PVI.
+ *
  *  Math: If volume_today > volume_yesterday:
  *              PVI = PVI_yesterday + ((Close - Close_yesterday) / Close_yesterday) * PVI_yesterday
  *      
@@ -213,7 +217,10 @@ py::array_t<T> pvi_calc(const py::array_t<T> prices,
 }
 
 /*
+ *  Implementation of NVI.
+ *
  *  Negative Volume Index
+ *
  *  Math: If volume_today > volume_yesterday:
  *              NVI = NVI_yesterday + ((Close - Close_yesterday) / Close_yesterday) * NVI_yesterday
  *      

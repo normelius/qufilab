@@ -22,7 +22,8 @@
 namespace py = pybind11;
 
 /*
-*   RSI (Relative Strength Index)
+*   Implementation of RSI.
+*
 *   @param prices (vector<double>): Vector with prices.
 *   @param periods (int): Number of periods.
 *   @param rsi_type (std::string): Specifies how the following gains/losses 
@@ -96,7 +97,8 @@ py::array_t<T> rsi_calc(const py::array_t<T> prices,
 }
 
 /*
-*   MACD (Moving Average Convergence Divergence)
+ *  Implementation of MACD.
+ *
 *   @param prices (vector<double>): Vector with prices.
 *   @param default_size (bool): Specify whether returned vector should be same length
 *       filled with NaNs.
@@ -142,7 +144,8 @@ std::tuple<py::array_t<T>, py::array_t<T>> macd_calc(const py::array_t<T> prices
 }
 
 /*
-*   Williams's %R
+*   Implementation of WILLR.
+*
 *   @param prices (vector<double>): Vector with closing prices.
 *   @param highs (vector<double>): Vector with high prices.
 *   @param lows (vector<double>): Vector with low prices.
@@ -229,7 +232,8 @@ std::tuple<std::vector<double>, std::vector<double>> stochastic_calc(const std::
 
 
 /*
-*   Price Rate-of-Change (ROC)
+*   Implementation of ROC.
+*
 *   Math: (price_now - price_periods) / (price_periods) * 100;
 *   @param prices (vector<double>): Vector with closing prices.
 *   @param periods (int): Number of periods.
@@ -254,7 +258,8 @@ py::array_t<T> roc_calc(const py::array_t<T> prices, const int periods) {
 }
    
 /*
-*   Volume and Price Trend (VPT)
+*   Implementation of VPT.
+*
 *   Math: (((close - close_yesterday) / (close_yesterday)) * volume) + pvt_yesterday
 *   @param prices (vector<double>): Vector with closing prices.
 *   @param volumes (vector<double>): Vector with volume prices.
@@ -285,7 +290,8 @@ py::array_t<T> vpt_calc(const py::array_t<T> prices,
 }
 
 /*
-*   Momentum Indicator (MI)
+*   Implementation of MI.
+*
 *   Math: close - close_periods
 *   @param prices (vector<double>): Vector with closing prices.
 *   @param periods (int): Number of periods.
@@ -311,7 +317,8 @@ py::array_t<T> mi_calc(const py::array_t<T> prices,
 
 
 /*
- *   Commodity Channel Index (CCI)
+ *   Implementation of CCI.
+ *
  *   Math: CCI = (TP - TP_sma) / (0.015 - MD).
  *      TP = Typical price = (high + low + close) / 3;
  *      MD = Mean deviation, calcualted with:
@@ -368,7 +375,7 @@ py::array_t<T> cci_calc(const py::array_t<T> close,
 
 
 /*
- *   Aroon Indicator (AR)
+ *   Implementation of AROON.
  *
  *   @param high (vector<double>): Vector with high prices.
  *   @param low (vector<double>): Vector with low prices.
@@ -408,8 +415,7 @@ py::array_t<T> aroon_calc(const py::array_t<T> high,
 }
 
 /*
- *   APO 
- *   Absolute Price Oscillator
+ *   Implementation of APO.
  *
  *   Math: MA(period_fast) - MA(period_slow), where:
  *   MA can be specified as:
@@ -457,8 +463,7 @@ py::array_t<T> apo_calc(const py::array_t<T> prices, const int period_slow,
 }
 
 /*
- *   BPO
- *   Balance of Power.
+ *   Implementation of BPO.
  *
  *   Math: (close - open) / (high - low);
  *
@@ -496,8 +501,7 @@ py::array_t<T> bop_calc(const py::array_t<T> high, const py::array_t<T> low,
 
 
 /*
- *   CMO
- *   Chande Momentum Indicator.
+ *   Implementation of CMO.
  *
  *   Math: ((sum_up - sum_down) / (sum_up + sum_down)) * 100, where:
  *      sum_up is the sum of the difference between current close and 
@@ -560,8 +564,7 @@ py::array_t<T> cmo_calc(const py::array_t<T> close, const int period) {
 }
 
 /*
- *   MFI
- *   Money Flow Index.
+ *   Implementation of MFI.
  *  
  *   Math: Typical price: (high + low + close) / 3.
  *      Raw money flow: Typical price * volume.
@@ -639,8 +642,8 @@ py::array_t<T> mfi_calc(const py::array_t<T> high,
 }
 
 /*
-*   PPO
-*   Percentage Price Oscillator
+*   Implementation of PPO.
+*
 *   @param prices (vector<double>): Vector with prices.
 *   @param default_size (bool): Specify whether returned vector should be same length
 *       filled with NaNs.

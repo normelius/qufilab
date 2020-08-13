@@ -21,7 +21,7 @@
 namespace py = pybind11;
 
 /*
- * Standard Deviation
+ * Implementation of STD.
  *
  * Calculates the standard deviation. 
  * Using normalization by default.
@@ -65,7 +65,7 @@ py::array_t<T> std_calc(const py::array_t<T> prices,
 }
 
 /*
- * Variance
+ * Implementation of VAR.
  *
  * Calculates the variance. 
 */
@@ -117,7 +117,7 @@ py::array_t<T> var_calc(const py::array_t<T> prices,
 }
 
 /*
- * Covariance
+ * Implementation of COV.
  *
  * Calculates the covariance between one price array and another.. 
 */
@@ -174,7 +174,7 @@ py::array_t<T> cov_calc(const py::array_t<T> prices, const py::array_t<T> market
 }
 
 /*
- * Beta
+ * Implementation of BETA.
  *
  * Calculates the beta coefficient for a price array.
  * 
@@ -216,6 +216,11 @@ py::array_t<T> beta_calc(const py::array_t<T> prices, const py::array_t<T> marke
     return beta;
 }
 
+/*
+ * Implementation of PCT_CHANGE.
+ *
+ * Calculates the percentage change of a price array.
+ */ 
 template <typename T>
 py::array_t<T> pct_change_calc(const py::array_t<T> prices, const int period) {
     py::buffer_info prices_buf = prices.request();

@@ -26,6 +26,8 @@ namespace py = pybind11;
 
 
 /*
+ *  Implementation of BBANDS.
+ *
     Calculates Bollinger Bands.
     Math: middle = SMA(periods).
           top = middle + (std_dev * std)
@@ -75,10 +77,11 @@ std::tuple<py::array_t<T>, py::array_t<T>, py::array_t<T>>
 }
 
 /*
-    Keltner Channels.
-    Math: middle = EMA(periods).
-          top = middle + (deviation * ATR(periods_atr))
-          bottom = middle - (deviation * ATR(periods_atr))
+ * Implementation of KC.
+ *
+ * Math: middle = EMA(periods).
+         top = middle + (deviation * ATR(periods_atr))
+         bottom = middle - (deviation * ATR(periods_atr))
     
     @param prices (vector<double>): Vector with prices.
     @param periods (int): Number of periods.
@@ -119,7 +122,8 @@ std::tuple<py::array_t<T>, py::array_t<T>, py::array_t<T>>
 }   
 
 /*
-    Average True Range (ATR).
+ * Implementation of ATR.
+ *
     Consists of taking the exponential average (standard 14 days) of the True Range.
     True Range vector will have one day's NaN since starting value should
     compare to yesterday's closing price.
@@ -175,7 +179,8 @@ py::array_t<T> atr_calc(const py::array_t<T> prices,
 }
 
 /*
-    Chaikin Volatility (CV).
+ * Implementation of CV.
+ *
     Math: True range-value is the greatest of the following.
 
     @param highs (vector<double>): Vector with high prices.
@@ -187,10 +192,10 @@ py::array_t<T> atr_calc(const py::array_t<T> prices,
 
 template <typename T>
 py::array_t<T> cv_calc(const py::array_t<T> highs,
-   const py::array_t<T> lows, const int period, const int smoothing_period) {
+    const py::array_t<T> lows, const int period, const int smoothing_period) {
 
-   //std::vector<double> diff(highs.size());
-   //std::vector<double> cv(highs.size(), std::numeric_limits<double>::quiet_NaN());
+    //std::vector<double> diff(highs.size());
+    //std::vector<double> cv(highs.size(), std::numeric_limits<double>::quiet_NaN());
     
     py::buffer_info highs_buf = highs.request();
     const int size = highs_buf.shape[0];

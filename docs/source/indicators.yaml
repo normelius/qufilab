@@ -26,3 +26,23 @@ momentum:
     - mfi
     - ppo
 
+volatility:
+    - bbands
+    - kc
+    - atr
+    - cv
+
+stat:
+    - std
+    - var
+    - cov
+    - beta
+    - pct_change
+
+volume:
+    - acdi
+    - obv
+    - cmf
+    - ci
+    - pvi
+    - nvi
