@@ -13,7 +13,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 autodoc_mock_imports = ['pandas', 'numpy', 'pybind11', 
         'qufilab.indicators._trend', 'qufilab.indicators._volume',
         'qufilab.indicators._stat', 'qufilab.indicators._volatility',
-        'qufilab.indicators._momentum']
+        'qufilab.indicators._momentum', 'qufilab.patterns._bullish',
+        'qufilab.patterns._bearish']
 
 # -- Project information -----------------------------------------------------
 

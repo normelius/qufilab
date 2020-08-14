@@ -10,3 +10,4 @@ from .indicators.momentum import *
 
 # Patterns
 from .patterns.bullish import *
+from .patterns.bearish import *

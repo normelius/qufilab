@@ -177,7 +177,6 @@ ext_modules = [
         ],
         language='c++'
     ),
-
     # Patterns
     ## Bullish extension
     Extension(
