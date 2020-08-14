@@ -61,6 +61,8 @@ def hammer(open_, high, low, close, date = None):
 
     Notes
     -----
+    Observe that the lower shadow shall be bigger than 2x the body, but lower
+    than 3x the body.
 
     .. image:: images/hammer.png
 

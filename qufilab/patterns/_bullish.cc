@@ -23,17 +23,17 @@ namespace py = pybind11;
  *
  */
 template <typename T>
-py::array_t<bool> hammer_calc(py::array_t<T> op, py::array_t<T> hi, 
-        py::array_t<T> lo, py::array_t<T> cl) {
+py::array_t<bool> hammer_calc(py::array_t<T> open, py::array_t<T> high, 
+        py::array_t<T> low, py::array_t<T> close) {
     
-    py::buffer_info close_buf = cl.request();
+    py::buffer_info close_buf = close.request();
     const int size = close_buf.shape[0];
 
     // Get pointers to the data.
     auto *close_ptr = (T *) close_buf.ptr;
-    auto *open_ptr = (T *) op.request().ptr;
-    auto *high_ptr = (T *) hi.request().ptr;
-    auto *low_ptr = (T *) lo.request().ptr;
+    auto *open_ptr = (T *) open.request().ptr;
+    auto *high_ptr = (T *) high.request().ptr;
+    auto *low_ptr = (T *) low.request().ptr;
 
     // Create array for hammer values based on input argument size
     // and initialize a zero array.
