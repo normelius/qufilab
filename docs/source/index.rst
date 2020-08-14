@@ -12,6 +12,7 @@ QufiLab
    :caption: Usage
 
    indicators
+   patterns
 
 .. toctree::
    :maxdepth: 1

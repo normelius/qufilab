@@ -177,6 +177,26 @@ ext_modules = [
         ],
         language='c++'
     ),
+
+    # Patterns
+    ## Bullish extension
+    Extension(
+        'qufilab.patterns._bullish.cc',
+        sorted(['qufilab/patterns/_bullish.cc']),
+        include_dirs=[
+            get_pybind_include(),
+        ],
+        language='c++'
+    ),
+    ## Bearish extension
+    Extension(
+        'qufilab.patterns._bearish.cc',
+        sorted(['qufilab/patterns/_bearish.cc']),
+        include_dirs=[
+            get_pybind_include(),
+        ],
+        language='c++'
+    ),
 ]
 
 PACKAGES = ['qufilab']
