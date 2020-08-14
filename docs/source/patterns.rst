@@ -6,12 +6,10 @@ Candlestick patterns
 
 Bullish patterns
 ****************
-Test
 .. autosummary::
-    hammer   
+    hammer
 
 .. autofunction:: hammer
 
 Bearish patterns
 ****************
-Test
