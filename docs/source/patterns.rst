@@ -9,8 +9,6 @@ Bullish patterns
 .. autosummary::
     hammer   
 
-.. autofunction:: hammer
-
 Bearish patterns
 ****************
 Test
