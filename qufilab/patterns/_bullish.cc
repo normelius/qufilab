@@ -114,6 +114,10 @@ py::array_t<bool> dragonfly_doji_calc(py::array_t<T> open, py::array_t<T> high,
         
         // Upper shadow significantly shorter than the body,
         // lower part of body close to high and long lower shadow.
+        // Close to high is here implemented that the lower part of body 
+        // is bigger than 99.8% of high, i.e. it is very close to the high.
+        // Of course this is open to interpretation "in mathematical terms, 
+        // how close should the lower body be to the high".
         if ((upper_shadow < body * 0.1) && (body_min >= high_ptr[idx] * 0.998) && 
                 (lower_shadow >= body * len_bottom_shadow)) {
             dfd_ptr[idx] = true;
