@@ -27,10 +27,10 @@ def hammer(open_, high, low, close, date = None):
 
     Returns
     -------
-    pattern : `ndarray`
+    hammer : `ndarray`
         A numpy ndarray of type bool specifying true whether
         a pattern has been found or false otherwise. 
-    pattern_dates : `ndarray`
+    hammer_dates : `ndarray`
         A numpy ndarray containing the dates when a pattern has
         bee found. This only returns in case `date` parameter
         has been specified.
@@ -67,18 +67,55 @@ def hammer(open_, high, low, close, date = None):
     .. image:: images/hammer.png
 
     """
-    pattern = hammer_calc(open_, high, low, close)
+    hammer = hammer_calc(open_, high, low, close)
     
     if date is None:
-        return pattern
+        return hammer
     
     # If dates, return dates where pattern is found.
-    pattern_dates = date[pattern.astype(bool)]
-    return pattern_dates
+    hammer_dates = date[hammer.astype(bool)]
+    return hammer_dates
     
 
 
+def dragonfly_doji(open_, high, low, close, date = None, bottom_shadow = 10.0):
+    """
+    Parameters
+    ----------
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a hammer pattern has been found.
+    bottom_shadow : `float`, optional
+        Specify how long the lower shadow should be in comparison to the body
+        of the candlestick. 
+        Defaults to 10.
 
+    Returns
+    -------
+    dragonfly_doji : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    dragonfly_doji_dates: `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    dragonfly_doji = dragonfly_doji_calc(open_, high, low, close, bottom_shadow)
+    
+    if date is None:
+        return dragonfly_doji
+    
+    # If dates, return dates where pattern is found.
+    dragonfly_doji_dates = date[dragonfly_doji.astype(bool)]
+    return dragonfly_doji_dates
 
 
 
