@@ -46,6 +46,7 @@ def sma(data, period):
     Examples
     --------
     >>> import qufilab as ql
+    >>> import numpy as np
     >>> data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
     >>> sma = ql.sma(data, 2)
     [nan 1.5 2.5 3.5 4.5]

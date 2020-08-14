@@ -17,4 +17,18 @@ void init_zeros(T (&array), const int size) {
     }
 }
 
+template<typename T>
+void init_int(T (&array), const int size) {
+    for (int idx = 0; idx < size; ++idx) {
+        array[idx] = 0;
+    }
+}
+
+template<typename T>
+void init_false(T (&array), const int size) {
+    for (int idx = 0; idx < size; ++idx) {
+        array[idx] = false;
+    }
+}
+
 #endif
