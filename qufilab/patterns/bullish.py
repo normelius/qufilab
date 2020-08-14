@@ -29,14 +29,24 @@ def hammer(open_, high, low, close, date = None):
 
     Returns
     -------
-    `ndarray`:
-        Returns a numpy ndarray of type bool specifying true whether
-        a pattern has been found or false otherwise.
+    pattern : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    pattern_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
 
     Examples
     --------
     >>> import qufilab as ql
     >>> import numpy as np
+
+    Notes
+    -----
+
+    .. image:: images/hammer.png
+
     """
     pattern = hammer_calc(open_, high, low, close)
     
@@ -44,7 +54,8 @@ def hammer(open_, high, low, close, date = None):
         return pattern
     
     # If dates, return dates where pattern is found.
-    return date[pattern.astype(bool)]
+    pattern_dates = date[pattern.astype(bool)]
+    return pattern_dates
     
 
 
