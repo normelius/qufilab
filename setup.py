@@ -187,15 +187,6 @@ ext_modules = [
         ],
         language='c++'
     ),
-    ## Bearish extension
-    Extension(
-        'qufilab.patterns._bearish.cc',
-        sorted(['qufilab/patterns/_bearish.cc']),
-        include_dirs=[
-            get_pybind_include(),
-        ],
-        language='c++'
-    ),
 ]
 
 PACKAGES = ['qufilab']
