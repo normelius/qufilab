@@ -11,6 +11,6 @@ set(PYBIND11_PYTHON_VERSION 3.7)
 find_package(pybind11 REQUIRED)
 
 # Bullish patterns module.
-set(BULLISH_DEPENDENCIES)
-pybind11_add_module(_bullish _bullish.cc ${BULLISH_DEPENDENCIES})
+set(DEP candlestick.cc ../indicators/_trend.cc)
+pybind11_add_module(_bullish _bullish.cc ${DEP})
 

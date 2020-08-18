@@ -9,7 +9,7 @@ import numpy as np
 
 from qufilab.patterns._bullish import *
 
-def hammer(open_, high, low, close, date = None):
+def hammer(high, low, open_, close, date = None, period = 10, shadow_margin = 5.0):
     """
     Parameters
     ----------
@@ -21,9 +21,16 @@ def hammer(open_, high, low, close, date = None):
         Array of type float64 or float32 containing low prices.
     close : `ndarray`
         Array of type float64 or float32 containing close prices.
-    date : `ndarray`
+    date : `ndarray`, optional
         Array containing corresponding dates which can be used in case
         one wants to only return the dates where a hammer pattern has been found.
+    period : `int`, optional
+        Specifying number of periods for trend identification.
+    shadow_margin : `float`, optional
+        Specify what margin should be allowed for the shadows. By using for 
+        example 5%, both the lower and upper shadow can be as long as 5%
+        of the candlestick body size. This exist to allow some margin and not
+        exclude the shadows entirely.
 
     Returns
     -------
@@ -67,18 +74,16 @@ def hammer(open_, high, low, close, date = None):
     .. image:: images/hammer.png
 
     """
-    hammer = hammer_calc(open_, high, low, close)
+    hammer_type = "hammer"
+    hammer = hammer_calc(high, low, open_, close, period, hammer_type, shadow_margin)
     
     if date is None:
         return hammer
     
-    # If dates, return dates where pattern is found.
     hammer_dates = date[hammer.astype(bool)]
     return hammer_dates
     
-
-
-def dragonfly_doji(open_, high, low, close, date = None, bottom_shadow = 10.0):
+def inverted_hammer(open_, high, low, close, date = None, period = 10):
     """
     Parameters
     ----------
@@ -93,10 +98,87 @@ def dragonfly_doji(open_, high, low, close, date = None, bottom_shadow = 10.0):
     date : `ndarray`, optional
         Array containing corresponding dates which can be used in case
         one wants to only return the dates where a hammer pattern has been found.
-    bottom_shadow : `float`, optional
-        Specify how long the lower shadow should be in comparison to the body
-        of the candlestick. 
-        Defaults to 10.
+    period : `int`, optional
+        Specifying number of periods for trend identification.
+
+    Returns
+    -------
+    inverted_hammer : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    inverted_hammer_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+
+    Notes
+    -----
+    Observe that the lower shadow shall be bigger than 2x the body, but lower
+    than 3x the body.
+
+    """
+    hammer_type = "inverted_hammer"
+    hammer = hammer_calc(open_, high, low, close, period, hammer_type)
+    
+    if date is None:
+        return hammer
+    
+    hammer_dates = date[hammer.astype(bool)]
+    return hammer_dates
+
+def doji(high, low, open_, close, date = None, period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    period : `int`, optional
+        Specifying number of periods for trend identification.
+
+    Returns
+    -------
+    doji : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    doji_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    doji = doji_calc(high, low, open_, close)
+    
+    if date is None:
+        return doji
+    
+    doji_dates = date[doji.astype(bool)]
+    return doji_dates
+
+def dragonfly_doji(high, low, open_, close, date = None, period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    period : `int`, optional
+        Specifying number of periods for trend identification.
 
     Returns
     -------
@@ -108,15 +190,323 @@ def dragonfly_doji(open_, high, low, close, date = None, bottom_shadow = 10.0):
         bee found. This only returns in case `date` parameter
         has been specified.
     """
-    dragonfly_doji = dragonfly_doji_calc(open_, high, low, close, bottom_shadow)
+    dragonfly_doji = dragonfly_doji_calc(high, low, open_, close, period)
     
     if date is None:
         return dragonfly_doji
     
-    # If dates, return dates where pattern is found.
     dragonfly_doji_dates = date[dragonfly_doji.astype(bool)]
     return dragonfly_doji_dates
 
+def marubozu_white(high, low, open_, close, date = None, shadow_margin = 5.0, period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    shadow_margin : `float`, optional
+        Specify what margin should be allowed for the shadows. By using for 
+        example 5%, both the lower and upper shadow can be as high as 5%
+        of the candlestick body size. This exist to allow some margin (not
+        restrict to no shadow).
+    period : `int`, optional
+        Specifying number of periods for trend identification.
+
+    Returns
+    -------
+    marubozu_white : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    marubozu_white_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    marubozu_white = marubozu_white_calc(high, low, open_, close, shadow_margin, period)
+    
+    if date is None:
+        return marubozu_white
+    
+    marubozu_white_dates = date[marubozu_white.astype(bool)]
+    return marubozu_white_dates
+
+def spinning_top_white(high, low, open_, close, date = None, period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    period : `int`, optional
+        Specifying number of periods for trend identification.
+
+    Returns
+    -------
+    spinning_top_white : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    spinning_top_white_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    spinning_top_white = spinning_top_white_calc(high, low, open_, close, period)
+    
+    if date is None:
+        return spinning_top_white
+    
+    spinning_top_white_dates = date[spinning_top_white.astype(bool)]
+    return spinning_top_white_dates
 
 
+def engulfing_bull(high, low, open_, close, date = None, trend_period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    engulfing : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    engulfing_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    engulfing_type = "bull"
+    engulfing = engulfing_calc(high, low, open_, close, trend_period, engulfing_type)
+    
+    if date is None:
+        return engulfing
+    
+    engulfing_dates = date[engulfing.astype(bool)]
+    return engulfing_dates
+
+def engulfing_bear(high, low, open_, close, date = None, trend_period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    engulfing : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    engulfing_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    engulfing_type = "bear"
+    engulfing = engulfing_calc(high, low, open_, close, trend_period, engulfing_type)
+    
+    if date is None:
+        return engulfing
+    
+    engulfing_dates = date[engulfing.astype(bool)]
+    return engulfing_dates
+
+
+def harami_bull(high, low, open_, close, date = None, trend_period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    harami_bull : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    harami_bull_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    harami_type = "bull"
+    harami = harami_calc(high, low, open_, close, trend_period, harami_type)
+    
+    if date is None:
+        return harami
+    
+    harami_dates = date[harami.astype(bool)]
+    return harami_dates
+
+def harami_bear(high, low, open_, close, date = None, trend_period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    harami_bear : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    harami_bear_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    harami_type = "bear"
+    harami = harami_calc(high, low, open_, close, trend_period, harami_type)
+    
+    if date is None:
+        return harami
+    
+    harami_dates = date[harami.astype(bool)]
+    return harami_dates
+
+
+def kicking_bull(high, low, open_, close, date = None, trend_period = 10, shadow_margin = 5.0):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+    shadow_margin : `float`, optional
+        Specify what margin should be allowed for the shadows. By using for 
+        example 5%, both the lower and upper shadow can be as high as 5%
+        of the candlestick body size. This exist to allow some margin (not
+        restrict to no shadow).
+
+    Returns
+    -------
+    kicking_bull : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    kicking_bull_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    kicking_type = "bull"
+    kicking = kicking_calc(high, low, open_, close, trend_period, kicking_type, shadow_margin)
+    
+    if date is None:
+        return kicking
+    
+    kicking_dates = date[kicking.astype(bool)]
+    return kicking_dates
+
+def kicking_bear(high, low, open_, close, date = None, trend_period = 10, shadow_margin = 5.0):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+    shadow_margin : `float`, optional
+        Specify what margin should be allowed for the shadows. By using for 
+        example 5%, both the lower and upper shadow can be as high as 5%
+        of the candlestick body size. This exist to allow some margin (not
+        restrict to no shadow).
+
+    Returns
+    -------
+    kicking_bear : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    kicking_bear_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    kicking_type = "bear"
+    kicking = kicking_calc(high, low, open_, close, trend_period, kicking_type, shadow_margin)
+    
+    if date is None:
+        return kicking
+    
+    kicking_dates = date[kicking.astype(bool)]
+    return kicking_dates
 
