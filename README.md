@@ -1,7 +1,6 @@
 # QufiLab
-Qufilab is a fast and modern quantitative finance library 
-implemented with the excellent pybind11 library and hence
-utilizing the performance given by c++.
+Qufilab is a fast and modern technical indicators library 
+implemented in c++.
 
 ## Features
 * Wide array of technical indicators.
@@ -15,9 +14,8 @@ Documentation for QufiLab can be found at: <https://qufilab.readthedocs.io>
 ## Usage
 > **WARNING**: All of qufilab's technical indicators are implemented in c++
 and a big part of the speed performance comes from the fact that no 
-type conversion exist between python and c++. In order for this to work, 
-**numpy arraysof type float64 (double) and float32 (float)** are used in the implementation, 
-and hence no other types of arrays/lists are currently supported.
+type conversion exist between python and c++. In order for this to work, numpy arrays
+of type **numpy.dtype.float64 (double) or numpy.dtype.float32 (float)** are preferably used. Observe that all other types of numpy arrays are still accepted, however the retured numpy array will be converted into the type **numpy.dtype.float64**.
 
 #### Indicators
 ```python
