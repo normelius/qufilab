@@ -1,6 +1,7 @@
 #ifndef PATTERN_UTIL_H
 #define PATTERN_UTIL_H
 
+#include <string>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
@@ -13,7 +14,7 @@
  *  body sizes.
  */
 template <typename T>
-py::array_t<T> calc_body_avg(const py::array_t<T> close,
+T* get_body_avg(const py::array_t<T> close,
         const py::array_t<T> open, const int period) {
 
     py::buffer_info close_buf = close.request();
@@ -31,8 +32,19 @@ py::array_t<T> calc_body_avg(const py::array_t<T> close,
     }
 
     py::array_t<T> body_avg = ema_calc(bodies, period);
-
-    return body_avg;
+    T *body_avg_ptr = (T *) body_avg.request().ptr;
+    return body_avg_ptr;
  }
+
+/*
+ * Utility function to get trend using simple moving average.
+ */
+template <typename T>
+T* get_trend(std::string type, const py::array_t<T> close,
+        const int trend_period) {
+    py::array_t<T> ma = sma_calc(close, trend_period);
+    return (T *) ma.request().ptr;
+}
+
 
 #endif

@@ -510,3 +510,157 @@ def kicking_bear(high, low, open_, close, date = None, trend_period = 10, shadow
     kicking_dates = date[kicking.astype(bool)]
     return kicking_dates
 
+def piercing(high, low, open_, close, date = None, trend_period = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    piercing : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    piercing_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    piercing = piercing_calc(high, low, open_, close, trend_period)
+    
+    if date is None:
+        return piercing
+    
+    piercing_dates = date[piercing.astype(bool)]
+    return piercing_dates
+
+def tws(high, low, open_, close, date = None, trend_period = 10):
+    """
+    Three White Soldiers
+
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    tws : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    tws_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    tws = tws_calc(high, low, open_, close, trend_period)
+    
+    if date is None:
+        return tws
+    
+    tws_dates = date[tws.astype(bool)]
+    return tws_dates
+
+def abandoned_baby_bull(high, low, open_, close, date = None, trend_period = 10):
+    """
+    Abandoned Baby Bull
+
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    pattern : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    pattern_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    type_ = "bull"
+    pattern = abandoned_baby_calc(high, low, open_, close, trend_period, type_)
+    
+    if date is None:
+        return pattern
+    
+    pattern_dates = date[abandoned_baby.astype(bool)]
+    return pattern_dates
+
+def abandoned_baby_bear(high, low, open_, close, date = None, trend_period = 10):
+    """
+    Abandoned Baby Bear
+
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    pattern : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    pattern_dates: `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    type_ = "bear"
+    pattern = abandoned_baby_calc(high, low, open_, close, trend_period, type_)
+    
+    if date is None:
+        return pattern
+    
+    pattern_dates = date[abandoned_baby.astype(bool)]
+    return pattern_dates
+
+
+

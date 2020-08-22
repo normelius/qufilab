@@ -10,6 +10,7 @@
 #include <cmath>
 #include <limits>
 #include <numeric>
+#include <cstdint>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
@@ -18,6 +19,7 @@
 #include "candlestick.h"
 #include "data_container.h"
 #include "pattern_utility.h"
+#include "conditions.h"
 
 #include "../indicators/util.h"
 #include "../indicators/_trend.h"
@@ -25,541 +27,442 @@
 namespace py = pybind11;
 
 /*
- * Implementation of HAMMER.
+ *  Implementation of HAMMER.
  *
- * Params:
- *  high (py::array_t<T>) : Array with high prices.
- *  low (py::array_t<T>) : Array with low prices.
- *  open (py::array_t<T>) : Array with opening prices.
- *  close (py::array_t<T>) : Array with close prices.
- *
- * Definition for this implementation:
- *  Hammer definition
- *      - Small body, i.e. candlestick body size is smaller than 
- *          the 14 period ema body size. See _pattern_util.h for implementation.
- *          Observer that the body cannot be a doji body, since it then will be
- *          a dragonfly doji.
- *      - No/short upper shadow, i.e. upper shadow less than 5% of the body.
- *          See _pattern_util.h for implementation.
- *      - Lower shadow bigger than 2x the body size. Observe that some references
- *          specify that the lower shadow should be between 2-3 times the body.
- *
- *  Inverted Hammer definition
- *      - Small body, i.e. candlestick body size is smaller than 
- *          the 14 period ema body size. See _pattern_util.h for implementation.
- *          Observer that the body cannot be a doji body, since it then will be
- *          a gravestone doji.
- *      - No/short lower shadow, i.e. lower shadow less than 5% of the body.
- *          See _pattern_util.h for implementation.
- *      - Upper shadow bigger than 2x the body size. Observe that some references
- *          specify that the upper shadow should be between 2-3 times the body.
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Specify the period for identify trend.
+ *      type (str) : Specify whether 'hammer' or 'inverted_hammer' 
+ *          should be calculated.
+ *      shadow_marign (T) : How much margin should be allowed on the 
+ *          upper shadow.
  */
 template <typename T>
 py::array_t<bool> hammer_calc(const py::array_t<T> high, 
         const py::array_t<T> low, const py::array_t<T> open, 
-        const py::array_t<T> close, const int period, const std::string hammer_type,
-        const T shadow_margin) {
+        const py::array_t<T> close, const int trend_period, 
+        const std::string type, const T shadow_margin) {
     
-    Container<T> data = {high, low, open, close};
+    const int body_avg_period = 14;
 
-    auto hammer = py::array_t<bool>(data.size);
-    auto *hammer_ptr = (bool *) hammer.request().ptr;
-    init_false(hammer_ptr, data.size);
-    
-    // Get average to use as a comparison for body sizes.
-    py::array_t<T> body_avg = calc_body_avg(open, close, 14);
-    auto *body_avg_ptr = (T *) body_avg.request().ptr;
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
 
-    // Get moving average values for identifying trend.
-    py::array_t<T> ma = sma_calc(close, period);
-    auto *ma_ptr = (T *) ma.request().ptr;
-
-    for (int idx = 14; idx < data.size; ++idx) {
+    for (int idx = body_avg_period; idx < data.size; ++idx) {
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
-            data.open[idx], data.close[idx], body_avg_ptr[idx], ma_ptr[idx]};
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
 
-        // Calculations for standard hammer.
-        if (hammer_type == "hammer" && candle.has_short_body() && 
-                !candle.has_doji_body() && !candle.has_upper_shadow(shadow_margin) &&
-                candle.lower_shadow >= candle.body * 2) {
-            hammer_ptr[idx] = true;
-        }
-        
-        // Calculations for the inverted hammer.
-        else if (hammer_type == "inverted_hammer" && candle.has_short_body() && 
-                !candle.has_doji_body() && !candle.has_lower_shadow(shadow_margin) &&
-                candle.upper_shadow >= candle.body * 2) {
-            hammer_ptr[idx] = true;
+        bool conditions = hammer_conditions(candle, shadow_margin, type);
+        if (conditions == true) {
+            result_container.found_pattern(idx);
         }
     }
 
-    return hammer;
+    return result_container.result;
 }
 
 
 /*
- * Implementation of DOJI.
+ *  Implementation of DOJI.
  *  
- * Params:
- *  high (py::array_t<T>) : Array with high prices.
- *  low (py::array_t<T>) : Array with low prices.
- *  open (py::array_t<T>) : Array with opening prices.
- *  close (py::array_t<T>) : Array with close prices.
- *
- * Definition:
- *  - Candlestick has a doji body, i.e. implemented here as a body 
- *      smaller than 5% of the whole candlestick range. See implementation
- *      in _pattern_util.h for more info.
- *  - Upper shadow and lower shadow are basically equal. This is handled
- *  by has_equal_shadows method in _pattern_util. Some margins are 
- *  required to catch more doji patterns. 
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Specify the period for identify trend.
  */
 template <typename T>
 py::array_t<bool> doji_calc(const py::array_t<T> high, 
         const py::array_t<T> low, const py::array_t<T> open, 
-        const py::array_t<T> close, const int period) {
+        const py::array_t<T> close, const int trend_period) {
 
-    Container<T> data = {high, low, open, close};
+    const int body_avg_period = 14;
 
-    auto doji = py::array_t<bool>(data.size);
-    auto *doji_ptr = (bool *) doji.request().ptr;
-    init_false(doji_ptr, data.size);
-    
-    // Get average to use as a comparison for body sizes.
-    py::array_t<T> body_avg = calc_body_avg(open, close, 14);
-    auto *body_avg_ptr = (T *) body_avg.request().ptr;
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
 
-    // Get moving average values for identifying trend.
-    py::array_t<T> ma = sma_calc(close, period);
-    auto *ma_ptr = (T *) ma.request().ptr;
-
-    for (int idx = 14; idx < data.size; ++idx) {
+    for (int idx = body_avg_period ; idx < data.size; ++idx) {
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
-            data.open[idx], data.close[idx], body_avg_ptr[idx], ma_ptr[idx]};
-        
-        if (candle.has_doji_body() && candle.has_equal_shadows()) {
-            doji_ptr[idx] = true;
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
+
+        bool correct_cond = doji_conditions(candle);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
         }
 
     }    
 
-    return doji;
+    return result_container.result;
 }
 
 
 /*
- * Implementation of DRAGONFLY_DOJI.
+ *  Implementation of DRAGONFLY_DOJI.
  *  
- * Params:
- *  high (py::array_t<T>) : Array with high prices.
- *  low (py::array_t<T>) : Array with low prices.
- *  open (py::array_t<T>) : Array with opening prices.
- *  close (py::array_t<T>) : Array with close prices.
- *
- * Definition:
- *  - Candlestick has a doji body, i.e. implemented here as a body 
- *      smaller than 5% of the whole candlestick range. See implementation
- *      in _pattern_util.h for more info.
- *  - No/small upper shadow. Since body already is small in a doji,
- *      the specification here is that the shadow should be less than 
- *      the body.
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Specify the period for identify trend.
  */
 template <typename T>
 py::array_t<bool> dragonfly_doji_calc(const py::array_t<T> high, 
         const py::array_t<T> low, const py::array_t<T> open, 
-        const py::array_t<T> close, const int period) {
+        const py::array_t<T> close, const int trend_period) {
     
-    Container<T> data = {high, low, open, close};
+    const int body_avg_period = 14;
 
-    // Create array for dragonfly doji values based on input argument size
-    // and initialize a zero array.
-    auto dfd = py::array_t<bool>(data.size);
-    auto *dfd_ptr = (bool *) dfd.request().ptr;
-    init_false(dfd_ptr, data.size);
-    
-    // Get average to use as a comparison for body sizes.
-    py::array_t<T> body_avg = calc_body_avg(open, close, 14);
-    auto *body_avg_ptr = (T *) body_avg.request().ptr;
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
 
-    // Get moving average values for identifying trend.
-    py::array_t<T> ma = sma_calc(close, period);
-    auto *ma_ptr = (T *) ma.request().ptr;
-
-    for (int idx = 14; idx < data.size; ++idx) {
+    for (int idx = body_avg_period; idx < data.size; ++idx) {
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
-            data.open[idx], data.close[idx], body_avg_ptr[idx], ma_ptr[idx]};
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
         
-        if (candle.has_doji_body() && candle.upper_shadow <= candle.body) {
-            dfd_ptr[idx] = true;
+        bool correct_cond = dragonfly_doji_conditions(candle);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
         }
-
     }    
 
-    return dfd;
+    return result_container.result;
 }
 
 /*
- * Implementation of MARUBOZU_WHITE.
+ *  Implementation of MARUBOZU_WHITE.
  *  
- * Params:
- *  high (py::array_t<T>) : Array with high prices.
- *  low (py::array_t<T>) : Array with low prices.
- *  open (py::array_t<T>) : Array with opening prices.
- *  close (py::array_t<T>) : Array with close prices.
- *  shadow_margin (float) : Float specifying what margin should be allowed
- *      for the shadows. For example, by using shadow_marign = 5, one allows
- *      the upper/lower shadows to be as high as 5% of the body size.
- *
- * Definition:
- *  - Candlestick body should be long. This is implemented as being bigger
- *      than the 14 period ema of the body sizes.
- *  - Candlestick should have no (or very little) upper and lower shadow.
- *      This implementation doesn't strictly enforce zero shadows, but
- *      using a small margin which can be specified with the 'shadow_margin'
- *      parameter.
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      shadow_margin (float) : Float specifying what margin should be allowed
+ *          for the shadows. For example, by using shadow_marign = 5, one allows
+ *          the upper/lower shadows to be as high as 5% of the body size.
+ *      trend_period (int) : Specify the period for identify trend.
  */
 template <typename T>
 py::array_t<bool> marubozu_white_calc(const py::array_t<T> high, 
         const py::array_t<T> low, const py::array_t<T> open, 
-        py::array_t<T> close, T shadow_margin, const int period) {
+        py::array_t<T> close, T shadow_margin, const int trend_period) {
 
-    Container<T> data = {high, low, open, close};
-    
-    auto marubozu_white = py::array_t<bool>(data.size);
-    auto *marubozu_white_ptr = (bool *) marubozu_white.request().ptr;
-    init_false(marubozu_white_ptr, data.size);
-    
-    // Get average to use as a comparison for body sizes.
-    py::array_t<T> body_avg = calc_body_avg(open, close, 14);
-    auto *body_avg_ptr = (T *) body_avg.request().ptr;
+    const int body_avg_period = 14;
 
-    // Get moving average values for identifying trend.
-    py::array_t<T> ma = sma_calc(close, period);
-    auto *ma_ptr = (T *) ma.request().ptr;
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
 
-    for (int idx = 14; idx < data.size; ++idx) {
+    for (int idx = body_avg_period; idx < data.size; ++idx) {
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
-            data.open[idx], data.close[idx], body_avg_ptr[idx], ma_ptr[idx]};
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
         
-        if (candle.has_long_body() && !candle.has_upper_shadow(shadow_margin) && 
-                !candle.has_lower_shadow(shadow_margin)) {
-            marubozu_white_ptr[idx] = true;
+        bool correct_cond = maribozu_white_conditions(candle, shadow_margin);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
         }
     }    
 
-    return marubozu_white;
+    return result_container.result;
 }
 
 /*
- * Implementation of SPINNING_TOP_WHITE.
+ *  Implementation of SPINNING_TOP_WHITE.
  *  
- * Params:
- *  high (py::array_t<T>) : Array with high prices.
- *  low (py::array_t<T>) : Array with low prices.
- *  open (py::array_t<T>) : Array with opening prices.
- *  close (py::array_t<T>) : Array with close prices.
- *
- * Definition:
- *  - Candlestick needs to be green, i.e. it is a positive candle.
- *  - Candlestick body can't be a doji.
- *  - Upper and lower shadows needs to be greater than the body. By calculating
- *      using the range of the candlestick, it is ensured that the shadows
- *      are quite symmetrical in size, which is what we want. Another approach
- *      to the implementation is to just check that the shadows are greater than
- *      the body size; however, this will have the effect that one shadow can be
- *      greatly bigger than another. Since this implementation assumes we want 
- *      symmetry (at least to some extent), the range is used instead.
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Specify the period for identify trend.
  */
 template <typename T>
 py::array_t<bool> spinning_top_white_calc(const py::array_t<T> high, 
         const py::array_t<T> low, const py::array_t<T> open, 
-        py::array_t<T> close, const int period) {
+        py::array_t<T> close, const int trend_period) {
     
-    Container<T> data = {high, low, open, close};
+    const int body_avg_period = 14;
 
-    auto res = py::array_t<bool>(data.size);
-    auto *res_ptr = (bool *) res.request().ptr;
-    init_false(res_ptr, data.size);
-    
-    // Get average to use as a comparison for body sizes.
-    py::array_t<T> body_avg = calc_body_avg(open, close, 14);
-    auto *body_avg_ptr = (T *) body_avg.request().ptr;
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
 
-    // Get moving average values for identifying trend.
-    py::array_t<T> ma = sma_calc(close, period);
-    auto *ma_ptr = (T *) ma.request().ptr;
-
-    for (int idx = 14; idx < data.size; ++idx) {
+    for (int idx = body_avg_period; idx < data.size; ++idx) {
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
-            data.open[idx], data.close[idx], body_avg_ptr[idx], ma_ptr[idx]};
-        
-        // By ensuring that the upper and lower shadows are greater than
-        // 1/3 of the range, we know that both shadows will be greater
-        // than the the body and that the shadows will be quite similar in size.
-        if (!candle.has_doji_body() && candle.is_green() &&
-                candle.upper_shadow >= candle.range * 1.0/3 && 
-                candle.lower_shadow >= candle.range * 1.0/3) {
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
 
-            res_ptr[idx] = true;
+        bool correct_cond = spinning_top_white_conditions(candle);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
         }
-
     }    
 
-    return res;
+    return result_container.result;
 }
 
 /*
- * Implementation of ENGULFING.
+ *  Implementation of ENGULFING.
  *  
- * Params:
- *  high (py::array_t<T>) : Array with high prices.
- *  low (py::array_t<T>) : Array with low prices.
- *  open (py::array_t<T>) : Array with opening prices.
- *  close (py::array_t<T>) : Array with close prices.
- *  trend (string) : Specify whether a trend detection should be included
- *      in the pattern. By defualt, no trend is specified.
- *  trend_period (int) : Period for moving average in order to identify trend.
- *  engulfing_type (string) : Specify what kind of engulfing type that should
- *      be calculated. Can choose from 'bull' or 'bear'.
- *
- * Definition:
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Period for moving average in order to identify trend.
+ *      type (string) : Specify what kind of engulfing type that should
+ *          be calculated. Can choose from 'bull' or 'bear'.
  */
 template <typename T>
 py::array_t<bool> engulfing_calc(const py::array_t<T> high, 
         const py::array_t<T> low, const py::array_t<T> open, 
-        py::array_t<T> close, const int trend_period, const std::string engulfing_type) {
+        py::array_t<T> close, const int trend_period, 
+        const std::string type) {
     
-    Container<T> data = {high, low, open, close};
-
-    auto res = py::array_t<bool>(data.size);
-    auto *res_ptr = (bool *) res.request().ptr;
-    init_false(res_ptr, data.size);
-    
-    // Get average to use as a comparison for body sizes.
     const int body_avg_period = 14;
-    py::array_t<T> body_avg = calc_body_avg(open, close, body_avg_period);
-    auto *body_avg_ptr = (T *) body_avg.request().ptr;
 
-    // Get moving average values for identifying trend.
-    py::array_t<T> ma =  sma_calc(close, trend_period);
-    auto *ma_ptr = (T *) ma.request().ptr;
-    
-    // Check start index based on the different periods. Observe we need +1 since
-    // this pattern requires two candlesticks.
-    int start_idx = body_avg_period + 1;
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
 
-    for (int idx = start_idx; idx < data.size; ++idx) {
+    for (int idx = body_avg_period + 1; idx < data.size; ++idx) {
         Candlestick<T> candle_prev = {data.high[idx-1], data.low[idx-1], 
-            data.open[idx-1], data.close[idx-1], body_avg_ptr[idx-1], ma_ptr[idx-1]};
+            data.open[idx-1], data.close[idx-1], body_avg[idx-1], trend[idx-1]};
 
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
-            data.open[idx], data.close[idx], body_avg_ptr[idx], ma_ptr[idx]};
-    
-        // Calculations for engulfing bull. Observe that both days body high 
-        // and body low can't be the same, only one can be the same.
-        if (engulfing_type == "bull" && candle.is_green() && candle.has_long_body() &&
-                candle_prev.is_red() && candle_prev.has_short_body() && 
-                candle.open <= candle_prev.close && candle.close >= candle_prev.open &&
-                (candle.open < candle_prev.close || candle.close > candle_prev.open)) {
-
-                    res_ptr[idx] = true;
-        }
-
-        // Calculations for engulfing bear. Observe that both days body high 
-        // and body low can't be the same, only one can be the same.
-        else if (engulfing_type == "bear" && candle.is_red() && candle.has_long_body() &&
-                candle_prev.is_green() && candle_prev.has_short_body() && 
-                candle.open >= candle_prev.close && candle.close <= candle_prev.open &&
-                (candle.open > candle_prev.close || candle.close < candle_prev.open)) {
-
-                    res_ptr[idx] = true;
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
+        
+        bool correct_cond = engulfing_conditions(candle, candle_prev, type);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
         }
 
     }
 
-    return res;
+    return result_container.result;
 }
 
 /*
- * Implementation of HARAMI.
+ *  Implementation of HARAMI.
  *  
- * Params:
- *  high (py::array_t<T>) : Array with high prices.
- *  low (py::array_t<T>) : Array with low prices.
- *  open (py::array_t<T>) : Array with opening prices.
- *  close (py::array_t<T>) : Array with close prices.
- *  trend_period (int) : Period for moving average in order to identify trend.
- *  harami_type (string) : Specify what kind of harami type that should
- *      be calculated. Can choose from 'bull' or 'bear'.
- *
- * Definition:
- * Observe that there exists numerous different interpretations of this pattern,
- * read the definition below to see how this is implemented.
- *
- *  Harami bull.
- *      - Previous candle needs to be to be a long red candle.
- *      - Current candle needs to be within the body range of the previous candle.
- *          The current body high can be the same as previous body high, or current
- *          body low can be the same as previous body low, but now both at the 
- *          same time.
- *      - In this implementation, current candle needs to be small, however NOT a doji
- *          candlestick.
- *      - Current candle color does not matter.
- *
- *  Harami bear.
- *      - Previous candle needs to be to be a long green candle.
- *      - Current candle needs to be within the body range of the previous candle.
- *          The current body high can be the same as previous body high, or current
- *          body low can be the same as previous body low, but now both at the 
- *          same time.
- *      - In this implementation, current candle needs to be small, however NOT a doji
- *          candlestick.
- *      - Current candle color does not matter.
- *
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Period for moving average in order to identify trend.
+ *      type (string) : Specify what kind of harami type that should
+ *          be calculated. Can choose from 'bull' or 'bear'.
  */
 template <typename T>
 py::array_t<bool> harami_calc(const py::array_t<T> high, 
         const py::array_t<T> low, const py::array_t<T> open, 
-        py::array_t<T> close, const int trend_period, const std::string harami_type) {
+        py::array_t<T> close, const int trend_period, 
+        const std::string type) {
     
-    Container<T> data = {high, low, open, close};
-    
-    auto res = py::array_t<bool>(data.size);
-    auto *res_ptr = (bool *) res.request().ptr;
-    init_false(res_ptr, data.size);
-    
-    // Get average to use as a comparison for body sizes.
     const int body_avg_period = 14;
-    py::array_t<T> body_avg = calc_body_avg(open, close, body_avg_period);
-    auto *body_avg_ptr = (T *) body_avg.request().ptr;
 
-    // Get moving average values for identifying trend.
-    py::array_t<T> ma =  sma_calc(close, trend_period);
-    auto *ma_ptr = (T *) ma.request().ptr;
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
     
-    // Check start index based on the different periods. Observe we need +1 since
-    // this pattern requires two candlesticks.
-    int start_idx = body_avg_period + 1;
-
-    for (int idx = start_idx; idx < data.size; ++idx) {
+    for (int idx = body_avg_period + 1; idx < data.size; ++idx) {
         Candlestick<T> candle_prev = {data.high[idx-1], data.low[idx-1], 
-            data.open[idx-1], data.close[idx-1], body_avg_ptr[idx-1], ma_ptr[idx-1]};
+            data.open[idx-1], data.close[idx-1], body_avg[idx-1], trend[idx-1]};
 
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
-            data.open[idx], data.close[idx], body_avg_ptr[idx], ma_ptr[idx]};
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
     
-        // Calculations for harami bull. Observe that both days body high 
-        // and body low can't be the same, only one can be the same.
-        if (harami_type == "bull" && candle_prev.has_long_body() &&
-                candle_prev.is_red() && !candle.has_doji_body() && 
-                candle.has_short_body() &&
-                candle_prev.body_low <= candle.body_low && 
-                candle_prev.body_high >= candle.body_high &&
-                (candle_prev.body_low < candle.body_low || 
-                 candle_prev.body_high > candle.body_high)) {
-
-                    res_ptr[idx] = true;
-        }
-
-        // Calculations for harami bear. Observe that both days body high 
-        // and body low can't be the same, only one can be the same.
-        else if (harami_type == "bear" && candle_prev.has_long_body() &&
-                candle_prev.is_green() && !candle.has_doji_body() &&
-                candle.has_short_body() &&
-                candle_prev.body_low <= candle.body_low && 
-                candle_prev.body_high >= candle.body_high &&
-                (candle_prev.body_low < candle.body_low || 
-                 candle_prev.body_high > candle.body_high)) {
-
-                    res_ptr[idx] = true;
+        bool correct_cond = harami_conditions(candle, candle_prev, type);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
         }
 
     }
 
-    return res;
+    return result_container.result;
 }
 
 /*
- * Implementation of KICKING.
- *  
- * Params:
- *  high (py::array_t<T>) : Array with high prices.
- *  low (py::array_t<T>) : Array with low prices.
- *  open (py::array_t<T>) : Array with opening prices.
- *  close (py::array_t<T>) : Array with close prices.
- *  trend_period (int) : Period for moving average in order to identify trend.
- *  kicking_type (string) : Specify what kind of kicking type that should
- *      be calculated. Can choose from 'bull' or 'bear'.
- *  shadow_margin (float) : Float specifying what margin should be allowed
- *      for the shadows. For example, by using shadow_marign = 5, one allows
- *      the upper/lower shadows to be as long as 5% of the body size.
- *
- * Definition:
- *  Kicking bull.
- *      - Previous candle needs to be a long red marubozu candle. 
- *      - Current candle needs to gap up from the previous candle.
- *      - Current candle needs to be a long green marubozu candle.
- *
- *  Kicking bear.
- *      - Previous candle needs to be a long green marubozu candle. 
- *      - Current candle needs to gap down from the previous candle.
- *      - Current candle needs to be a long red marubozu candle.
- *
+ *  Implementation of KICKING.
+ *   
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Period for moving average in order to identify trend.
+ *      type (string) : Specify what kind of kicking type that should
+ *          be calculated. Can choose from 'bull' or 'bear'.
+ *      shadow_margin (float) : Float specifying what margin should be allowed
+ *          for the shadows. For example, by using shadow_marign = 5, one allows
+ *          the upper/lower shadows to be as long as 5% of the body size.
  */
 template <typename T>
 py::array_t<bool> kicking_calc(const py::array_t<T> high, 
         const py::array_t<T> low, const py::array_t<T> open, 
-        py::array_t<T> close, const int trend_period, const std::string kicking_type,
+        py::array_t<T> close, const int trend_period, const std::string type,
         const float shadow_margin) {
 
-    Container<T> data = {high, low, open, close};
-    
-    auto res = py::array_t<bool>(data.size);
-    auto *res_ptr = (bool *) res.request().ptr;
-    init_false(res_ptr, data.size);
-    
-    // Get average to use as a comparison for body sizes.
     const int body_avg_period = 14;
-    py::array_t<T> body_avg = calc_body_avg(open, close, body_avg_period);
-    auto *body_avg_ptr = (T *) body_avg.request().ptr;
 
-    // Get moving average values for identifying trend.
-    py::array_t<T> ma =  sma_calc(close, trend_period);
-    auto *ma_ptr = (T *) ma.request().ptr;
-    
-    // Check start index based on the different periods. Observe we need +1 since
-    // this pattern requires two candlesticks.
-    int start_idx = body_avg_period + 1;
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
 
-    for (int idx = start_idx; idx < data.size; ++idx) {
+    for (int idx = body_avg_period + 1; idx < data.size; ++idx) {
         Candlestick<T> candle_prev = {data.high[idx-1], data.low[idx-1], 
-            data.open[idx-1], data.close[idx-1], body_avg_ptr[idx-1], ma_ptr[idx-1]};
+            data.open[idx-1], data.close[idx-1], body_avg[idx-1], trend[idx-1]};
 
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
-            data.open[idx], data.close[idx], body_avg_ptr[idx], ma_ptr[idx]};
-    
-        // Calculations for kicking bull. 
-        if (kicking_type == "bull" && candle_prev.has_long_body() &&
-                candle_prev.is_red() && candle_prev.is_marubozu(shadow_margin) && 
-                candle.has_long_body() && candle.is_green() && 
-                candle.is_marubozu(shadow_margin) && (candle.low > candle_prev.high)) {
-
-                    res_ptr[idx] = true;
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
+        
+        bool correct_cond = kicking_conditions(candle, candle_prev, shadow_margin,
+                type);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
         }
-
-        // Calculations for kicking bear. 
-        else if (kicking_type == "bear" && candle_prev.has_long_body() &&
-                candle_prev.is_green() && candle_prev.is_marubozu(shadow_margin) && 
-                candle.has_long_body() && candle.is_red() && 
-                candle.is_marubozu(shadow_margin) && (candle.high < candle_prev.low)) {
-
-                    res_ptr[idx] = true;
-        }
-
     }
 
-    return res;
+    return result_container.result;
 }
+
+/*
+ *  Implementation of PIERCING.
+ *  
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Period for moving average in order to identify trend.
+ */
+template <typename T>
+py::array_t<bool> piercing_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        py::array_t<T> close, const int trend_period) {
+
+    const int body_avg_period = 14;
+
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
+    
+    for (int idx = body_avg_period + 1; idx < data.size; ++idx) {
+        Candlestick<T> candle_prev = {data.high[idx-1], data.low[idx-1], 
+            data.open[idx-1], data.close[idx-1], body_avg[idx-1], trend[idx-1]};
+
+        Candlestick<T> candle = {data.high[idx], data.low[idx], 
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
+    
+        bool correct_cond = piercing_conditions(candle, candle_prev);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
+        }
+    }
+
+    return result_container.result;
+}
+
+/*
+ *  Implementation of THREE WHITE SOLDIERS.
+ *  
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Period for moving average in order to identify trend.
+ */
+template <typename T>
+py::array_t<bool> tws_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        py::array_t<T> close, const int trend_period) {
+
+    const int body_avg_period = 14;
+
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
+
+    for (int idx = body_avg_period + 2; idx < data.size; ++idx) {
+        Candlestick<T> c1 = {data.high[idx], data.low[idx], 
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
+
+        Candlestick<T> c2 = {data.high[idx-1], data.low[idx-1], 
+            data.open[idx-1], data.close[idx-1], body_avg[idx-1], trend[idx-1]};
+
+        Candlestick<T> c3 = {data.high[idx-2], data.low[idx-2], 
+            data.open[idx-2], data.close[idx-2], body_avg[idx-2], trend[idx-2]};
+
+        auto correct_cond = tws_conditions(c1, c2, c3);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
+        }
+    }
+
+    return result_container.result;;
+}
+
+/*
+ *  Implementation of ABANDONED BABY.
+ *  
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Period for moving average in order to identify trend.
+ */
+template <typename T>
+py::array_t<bool> abandoned_baby_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        py::array_t<T> close, const int trend_period, const std::string type) {
+
+    const int body_avg_period = 14;
+
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
+
+    for (int idx = body_avg_period + 2; idx < data.size; ++idx) {
+        Candlestick<T> c1 = {data.high[idx], data.low[idx], 
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
+
+        Candlestick<T> c2 = {data.high[idx-1], data.low[idx-1], 
+            data.open[idx-1], data.close[idx-1], body_avg[idx-1], trend[idx-1]};
+
+        Candlestick<T> c3 = {data.high[idx-2], data.low[idx-2], 
+            data.open[idx-2], data.close[idx-2], body_avg[idx-2], trend[idx-2]};
+
+        bool correct_cond = abandoned_baby_conditions(c1, c2, c3, type);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
+        }
+    }
+
+    return result_container.result;
+}
+
+
+
 
 PYBIND11_MODULE(_bullish, m) {
     m.def("hammer_calc", &hammer_calc<double>, "Hammer pattern");
@@ -585,5 +488,15 @@ PYBIND11_MODULE(_bullish, m) {
 
     m.def("kicking_calc", &kicking_calc<double>, "Kicking pattern");
     m.def("kicking_calc", &kicking_calc<float>, "Kicking pattern");
+
+    m.def("piercing_calc", &piercing_calc<double>, "Piercing pattern");
+    m.def("piercing_calc", &piercing_calc<float>, "Piercing pattern");
+
+    m.def("tws_calc", &tws_calc<double>, "Three White Soldiers pattern");
+    m.def("tws_calc", &tws_calc<float>, "Three White Soldiers pattern");
+
+    m.def("abandoned_baby_calc", &abandoned_baby_calc<double>, "Abandoned baby pattern");
+    m.def("abandoned_baby_calc", &abandoned_baby_calc<float>, "Abandoned baby pattern");
+
 }
 

@@ -11,6 +11,7 @@
 #include <string>
 #include <limits>
 #include <numeric>
+#include <cstdint>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 

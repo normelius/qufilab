@@ -51,4 +51,25 @@ py::array_t<bool> kicking_calc(const py::array_t<T> high,
         const py::array_t<T> close, const int trend_period, 
         const std::string kicking_type, const float shadow_margin);
 
+template <typename T>
+py::array_t<bool> piercing_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        const py::array_t<T> close, const int trend_period);
+
+template <typename T>
+py::array_t<bool> tws_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        const py::array_t<T> close, const int trend_period);
+
+template <typename T>
+py::array_t<bool> tws_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        const py::array_t<T> close, const int trend_period);
+
+template <typename T>
+py::array_t<bool> abandoned_baby_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        const py::array_t<T> close, const int trend_period,
+        const std::string type);
+
 #endif

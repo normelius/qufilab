@@ -6,6 +6,7 @@
  *
  */
 
+#include <cstdint>
 #include "candlestick.h"
 
 template <typename T>
@@ -16,6 +17,7 @@ Candlestick<T>::Candlestick(T high, T low, T open, T close, T body_avg, T ma) {
     this -> close = close;
     body_high = std::max(close, open);
     body_low = std::min(close, open);
+    body_mid = (body_low + body_high) / 2.0;
     this -> ma = ma;
 
     body = body_high - body_low;
@@ -101,9 +103,6 @@ bool Candlestick<T>::is_marubozu(const float shadow_margin) {
 // moving average of previous body sizes.
 template <typename T>
 bool Candlestick<T>::has_up_trend() {return close >= ma ? true : false;}
-
-
-
 
 
 

@@ -8,6 +8,7 @@
 #include <numeric>
 #include <omp.h>
 #include <x86intrin.h>
+#include <cstdint>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>

@@ -12,6 +12,7 @@
 #include <sstream>  
 #include <chrono>
 #include <limits>
+#include <cstdint>
 #include <omp.h>
 #include <x86intrin.h>
 #include <pybind11/pybind11.h>

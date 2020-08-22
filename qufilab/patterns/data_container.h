@@ -5,6 +5,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
+#include "../indicators/util.h"
+
 namespace py = pybind11;
 
 /*
@@ -14,14 +16,14 @@ namespace py = pybind11;
  *  data for ease of use.
  */
 template <typename T>
-struct Container{
+struct InputContainer{
     T *high;
     T *low;
     T *open;
     T *close;
     int size;
 
-    Container(py::array_t<T> high, py::array_t<T> low, py::array_t<T> open,
+    InputContainer(py::array_t<T> high, py::array_t<T> low, py::array_t<T> open,
         py::array_t<T> close) {
 
         py::buffer_info buffer = close.request();
@@ -33,6 +35,21 @@ struct Container{
         // Get size of the first dimension. Since we only deal with
         // 1D arrays, only one dimension exists.
         this -> size = buffer.shape[0];
+    }
+};
+
+struct ResultContainer {
+    py::array_t<bool> result;
+    bool *result_ptr;
+
+    ResultContainer(int size) {
+        result = py::array_t<bool>(size);
+        result_ptr = (bool *) result.request().ptr;
+        init_false(result_ptr, size);
+    }
+
+    void found_pattern(int idx) {
+        result_ptr[idx] = true;
     }
 };
 

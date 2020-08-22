@@ -9,8 +9,10 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <numeric>
+#include <cstdint>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>

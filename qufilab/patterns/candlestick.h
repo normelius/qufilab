@@ -16,20 +16,10 @@ namespace py = pybind11;
 template <typename T>
 struct Candlestick {
     // Explicit values on the candlestick.
-    T high;
-    T low;
-    T open;
-    T close;
-    T body_high;
-    T body_low;
-    T ma;
+    T high, low, open, close, body_high, body_low, body_mid, ma;
 
     // Distances on the candlestick.
-    T body;
-    T body_avg;
-    T upper_shadow;
-    T lower_shadow;
-    T range;
+    T body, body_avg, upper_shadow, lower_shadow, range;
 
     // Construct a single candlestick.
     Candlestick(T high, T low, T open, T close, T body_avg, T ma);
