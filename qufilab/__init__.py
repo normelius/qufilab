@@ -13,6 +13,5 @@ from .patterns.bullish import *
 
 from .sample.load_sample import *
 
-from .dashboard.serve import *
 
 
