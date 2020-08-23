@@ -5,108 +5,167 @@ Indicators
     All of qufilab's technical indicators are implemented in c++ and a 
     big part of the speed performance comes from the fact that no 
     type conversion exist between python and c++. In order for this to work, 
-    numpy arrays of type **float64 (double) or float32 (float)** are used in the implementation, 
-    and hence no other types are currently supported.
+    numpy arrays of type ``numpy.dtype.float64`` or ``numpy.dtype.float32``    
+    are preferably used. Observe that all other types of numpy arrays are accepted, 
+    however the returned numpy array will be converted into the type 
+    ``numpy.dtype.float64``.
 
 .. currentmodule:: qufilab
 
 Trend
 *****
-.. autosummary::
-    dema 
-    ema
-    lwma
-    sma
-    smma
-    t3
-    tma
-    wc
-
+Double Exponential Moving Average
+---------------------------------
 .. autofunction:: dema
+
+Exponential Moving Average
+--------------------------
 .. autofunction:: ema
+
+Linear Weighted Moving Average
+------------------------------
 .. autofunction:: lwma
+
+Simple Moving Average
+---------------------
 .. autofunction:: sma
+
+Smoothed Moving Average
+-----------------------
 .. autofunction:: smma
+
+T3 Moving Average
+-----------------
 .. autofunction:: t3
+
+Triangular Moving Average
+-------------------------
 .. autofunction:: tma
+
+Weighted Close
+--------------
 .. autofunction:: wc
 
 Momentum
 ********
-.. autosummary::  
-    apo
-    aroon
-    bop 
-    cci
-    cmo
-    macd
-    mfi
-    mi
-    ppo
-    rsi
-    roc
-    vpt
-    willr
-
+Absolute Price Oscillator
+-------------------------
 .. autofunction:: apo
+
+Aroon Indicator
+---------------
 .. autofunction:: aroon
+
+Balance of Power
+----------------
 .. autofunction:: bop
+
+Commodity Channel Index
+-----------------------
 .. autofunction:: cci
+
+Chande Momentum Indicator
+-------------------------
 .. autofunction:: cmo
+
+MACD
+----
 .. autofunction:: macd
+
+Money Flow Index
+----------------
 .. autofunction:: mfi
+
+Momentum Indicator
+------------------
 .. autofunction:: mi
+
+Percentage Price Oscillator
+---------------------------
 .. autofunction:: ppo
+
+Relative Strength Index
+-----------------------
 .. autofunction:: rsi
+
+Price Rate of Change
+--------------------
 .. autofunction:: roc
+
+Volume Price Trend
+------------------
 .. autofunction:: vpt
+
+William's R
+-----------
 .. autofunction:: willr
 
  
 
 Volatility
 **********
-.. autosummary::
-    atr
-    bbands
-    cv
-    kc
-
+Average True Range
+------------------
 .. autofunction:: atr
+
+Bollinger Bands
+---------------
 .. autofunction:: bbands
+
+Chaikin Volatility
+------------------
 .. autofunction:: cv
+
+Keltner Channels
+----------------
 .. autofunction:: kc
 
 Volume
 ******
-.. autosummary::
-    acdi
-    ci
-    cmf
-    nvi
-    obv
-    pvi
-
+Accumulation Distribution
+-------------------------
 .. autofunction:: acdi
+
+Chaikin Indicator
+-----------------
 .. autofunction:: ci
+
+Chaikin Money Flow
+------------------
 .. autofunction:: cmf
+
+Negative Volume Index
+---------------------
 .. autofunction:: nvi
+
+On Balance Volume
+-----------------
 .. autofunction:: obv
+
+Positive Volume Index
+---------------------
 .. autofunction:: pvi
 
 Statistics
 **********
-.. autosummary::
-    beta
-    cov
-    pct_change
-    std
-    var
-
+Beta
+----
 .. autofunction:: beta
+
+Covariance
+----------
 .. autofunction:: cov
+
+Percentage Change
+-----------------
 .. autofunction:: pct_change
+
+Standard Deviation
+------------------
 .. autofunction:: std
+
+Variance
+--------
 .. autofunction:: var
 
 

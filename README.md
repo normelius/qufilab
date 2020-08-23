@@ -15,7 +15,7 @@ Documentation for QufiLab can be found at: <https://qufilab.readthedocs.io>
 > **WARNING**: All of qufilab's technical indicators are implemented in c++
 and a big part of the speed performance comes from the fact that no 
 type conversion exist between python and c++. In order for this to work, numpy arrays
-of type **numpy.dtype.float64 (double) or numpy.dtype.float32 (float)** are preferably used. Observe that all other types of numpy arrays are still accepted, however the retured numpy array will be converted into the type **numpy.dtype.float64**.
+of type **numpy.dtype.float64 (double) or numpy.dtype.float32 (float)** are preferably used. Observe that all other types of numpy arrays still are accepted, however the retured numpy array will be converted into the type **numpy.dtype.float64**.
 
 #### Indicators
 ```python

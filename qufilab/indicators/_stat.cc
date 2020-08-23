@@ -44,7 +44,7 @@ py::array_t<T> std_calc(const py::array_t<T> prices,
     init_nan(std_ptr, size);
 
     for (int ii = 0; ii < size - period+ 1; ii++) {
-        auto temp = 0;
+        T temp = 0;
 
         for (int idx = ii; idx < period+ ii; idx++) {
             temp += pow((prices_ptr[idx] - sma_ptr[ii+period-1]), 2);

@@ -11,45 +11,34 @@ import numpy as np
 from qufilab.indicators._trend import *
 
 
-def _validate_input(data = None, period = None):
+def sma(data, periods):
     """
-    General function to validate specified user parameters.
-    """
-    if data is not None:
-        if not isinstance(data, np.ndarray) or data.dtype != np.float64:
-            raise ValueError("Param 'data' needs to be of type numpy.ndarray with " \
-                "dtype numpy.float64, i.e. double")
-
-    if period is not None:
-        if not isinstance(period, int) or period <= 0:
-            raise ValueError("Param 'period' needs to be an int greater than zero")
-
-
-# Trend interface
-# ---------------
-def sma(data, period):
-    """
-    Simple moving average
+    .. Simple moving average
 
     Parameters
     ----------
     data : `ndarray`
-        Array of type float64 containing the data to be used.
-    period : `int`
+        An array containing values.
+    periods : `int`
         Number of periods to be used.
 
     Returns
     -------
     `ndarray`
-        Returns a numpy ndarray of type float64 with simple moving averages.
+        An array containing calculated simple moving average values.
 
     Examples
     --------
     >>> import qufilab as ql
     >>> import numpy as np
-    >>> data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    >>> sma = ql.sma(data, 2)
-    [nan 1.5 2.5 3.5 4.5]
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> print(df['close'].dtype)
+    float64
+    >>> sma = ql.sma(df['close'], periods = 10)
+    >>> print(sma)
+    [nan nan nan ... 209.872 209.695 209.749]
 
     Notes
     -----
@@ -60,34 +49,36 @@ def sma(data, period):
         \\frac{1}{n}\sum_{i=0}^{n-1} price_{K-i}
 
     """
-    #_validate_input(data = data, period = period)
-    return sma_calc(data, period)
+    return sma_calc(data, periods)
 
-def sma_test(data, period):
-    return sma_calc_test(data, period)
-
-def ema(data, period):
+def ema(data, periods):
     """
-    Exponential moving average
+    .. Exponential Moving Average
 
     Parameters
     ----------
     data : `ndarray`
-        Array of type float64 containing the data to be used.
-    period : `int`
+        An array containing values.
+    periods : `int`
         Number of periods to be used.
 
     Returns
     -------
     `ndarray`
-        Returns a ndarray of type float64 with exponential moving averages.
+        An array containing calculated exponential moving average values.
 
     Examples
     --------
     >>> import qufilab as ql
-    >>> data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    >>> ema = ql.ema(data, 2)
-    [nan 1.5 2.5 3.5 4.5]
+    >>> import numpy as np
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> print(df['close'].dtype)
+    float64
+    >>> ema = ql.ema(df['close'], periods = 10)
+    >>> print(ema)
+    [nan nan nan ... 209.63323895 210.53265005 210.98489549]
 
     Notes
     -----
@@ -105,124 +96,136 @@ def ema(data, period):
     the period *n*. Observe that for the first ema value, a simple moving average
     is used.
     """
-    _validate_input(data = data, period = period)
-    return ema_calc(data, period)
+    return ema_calc(data, periods)
 
 
-def dema(data, period):
+def dema(data, periods):
     """
-    Double exponential moving average
+    .. Double Exponential Moving Average
 
     Parameters
     ----------
     data : `ndarray`
-        Array of type float64 containing the data to be used.
-    period : `int`
+        An array containing values.
+    periods : `int`
         Number of periods to be used.
 
     Returns
     -------
     `ndarray`
-        Returns a ndarray of type float64 with double exponential moving averages.
+        An array containing calculated double exponential moving average values.
 
     Examples
     --------
     >>> import qufilab as ql
-    >>> data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    >>> dema = ql.dema(data, 2)
-    [nan nan 3. 4. 5.]
+    >>> import numpy as np
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> print(df['close'].dtype)
+    float64
+    >>> dema = ql.ema(df['close'], periods = 10)
+    >>> print(dema)
+    [nan nan nan ... 210.18599259 211.72078484 212.32702478]
 
     Notes
     -----
-    The calculation of dema depends on taking an ema of an ema, hence the name.
-    Since an ema is calculated from an ema, one more value is needed in the
-    original series to start calculating values, which is shown in the example above.
-
     .. math::
         dema_K = 2 \cdot ema_K - ema(ema_K)
 
     """
-    _validate_input(data = data, period = period)
-    return dema_calc(data, period)
+    return dema_calc(data, periods)
 
-def tema(data, period):
+def tema(data, periods):
     """
-    Triple exponential moving average
+    .. Triple Exponential Moving Average
 
     Parameters
     ----------
     data : `ndarray`
-        Array of type float64 containing the data to be used.
-    period : `int`
+        An array containing values.
+    periods : `int`
         Number of periods to be used.
 
     Returns
     -------
     `ndarray`
-        Returns a ndarray of type float64 with triple exponential moving averages.
+        An array containing calculated triple exponential moving average values.
 
     Examples
     --------
     >>> import qufilab as ql
-    >>> data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    >>> tema = ql.tema(data, 3)
-    [nan nan nan 4. 5.]
+    >>> import numpy as np
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> print(df['close'].dtype)
+    float64
+    >>> tema = ql.tema(df['close'], periods = 10)
+    >>> print(tema)
+    [nan nan nan ... 210.00373443 212.09152183 212.75635054]
 
     Notes
     -----
     The triple exponential moving average is similar to the other exponential
-    moving averages, however this one is utilizing three exponential moving averages.
+    moving averages, however this one utilize three exponential moving averages.
 
     .. math::
         tema_K = 3 \cdot ema_K - 3 \cdot ema(ema_K) + ema(ema(ema_K))
     """
-    _validate_input(data = data, period = period)
-    return tema_calc(data, period)
+    return tema_calc(data, periods)
 
-def t3(data, period, volume_factor = 0.7):
+def t3(data, periods, volume_factor = 0.7):
     """
-    T3 moving average
+    .. T3 Moving Average
 
     Parameters
     ----------
     data : `ndarray`
-        Array of type float64 containing the data to be used.
-    period : `int`
+        An array containing values.
+    periods : `int`
         Number of periods to be used.
     volume_factor : `float`, optional
-        Volume factor to be used when calculating the constants.
+        What volume factor to be used when calculating the constants. 
+        See `Notes` below for implementation.
 
     Returns
     -------
     `ndarray`
-        Returns a ndarray of type float64 with t3 moving averages.
+        An array containing calculated t3 moving average values.
 
     Examples
     --------
     >>> import qufilab as ql
-    >>> data = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
-    >>> t3 = ql.t3(data, 2)
-    [nan  nan  nan  nan  nan  nan  nan  nan  nan 9.55]
+    >>> import numpy as np
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> print(df['close'].dtype)
+    float64
+    >>> t3 = ql.t3(df['close'], periods = 10)
+    >>> print(t3)
+    [nan nan nan ... 210.08668472 210.2348457 210.47802463]
 
     Notes
     -----
-    The t3 moving average indicator utilizes many different forms of the
-    exponential moving average and is calculated with:
+    The t3 moving average indicator utilize many different 
+    exponential moving averages and is calculated with:
 
     .. math::
-        t3 = c_1\cdot e_6 + c_2\cdot e_5 + c_3\cdot e_4 + c_4\cdot e_3
+        t3 = c_1e_6 + c_2e_5 + c_3e_4 + c_4e_3
 
-        ema_1 = ema(price)
+        e_1 = ema(data)
 
-        ema_2 = ema(ema_1)
+        e_2 = ema(e_1)
 
-        ema_3 = ema(ema_2)
+        e_3 = ema(e_2)
 
-        ema_4 = ema(ema_3)
+        e_4 = ema(e_3)
 
-        ema_5 = ema(ema_4)
+        e_5 = ema(e_4)
 
-        ema_6 = ema(ema_5)
+        e_6 = ema(e_5)
 
         c_1 = -a^3
 
@@ -232,39 +235,42 @@ def t3(data, period, volume_factor = 0.7):
 
         c_4 = 1 + 3a + a^3 + 3a^2
 
-    where *a* is the volume factor and is typically set to :math:`0.7`.
-
+    where *a* is the volume factor and is typically set to `0.7`.
     """
-    _validate_input(data = data, period = period)
-
     if volume_factor < 0:
         raise ValueError("Param 'volume_factor' needs to be bigger than zero")
 
-    return t3_calc(data, period, volume_factor)
+    return t3_calc(data, periods, volume_factor)
 
 
-def tma(data, period):
+def tma(data, periods):
     """
-    Triangular moving average
+    .. Triangular Moving Average
 
     Parameters
     ----------
     data : `ndarray`
-        Array of type float64 containing the data to be used.
-    period : `int`
+        An array containing values.
+    periods : `int`
         Number of periods to be used.
 
     Returns
     -------
     `ndarray`
-        Returns a ndarray of type float64 with triangular moving averages.
+        An array containing calculated triangular moving average values.
 
     Examples
     --------
     >>> import qufilab as ql
-    >>> data = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
-    >>> tma = ql.tma(data, 2)
-    [nan 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5]
+    >>> import numpy as np
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> print(df['close'].dtype)
+    float64
+    >>> tma = ql.tma(df['close'], periods = 10)
+    >>> print(tma)
+    [nan nan nan ... 208.93833333 209.115 209.684]
 
     Notes
     -----
@@ -273,71 +279,87 @@ def tma(data, period):
     .. math::
         tma = sma(sma(price, n_1), n_2)
 
-    As seen in the formula above, two different periods are used in this
-    implementation. If the user specified period is even:
+    As seen above, two different periods are used in this
+    implementation. If the parameter `periods` is even
 
     .. math::
-        n_1 = \\frac{period}{2}
+        n_1 = \\frac{periods}{2}
 
-        n_2 = \\frac{period}{2} + 1
+        n_2 = \\frac{periods}{2} + 1
 
-    If the user specified period is uneven:
+    otherwise they are rounded up after the following calculation
 
     .. math::
-        n_1 = n_2 = \\frac{period + 1}{2} (\\textrm{rounded up})
+        n_1 = n_2 = \\frac{periods + 1}{2}
     """
-    _validate_input(data = data, period = period)
+    return tma_calc(data, periods)
 
-    return tma_calc(data, period)
-
-def smma(data, period):
+def smma(data, periods):
     """
-    Smoothed moving average
+    .. Smoothed Moving Average
 
     Parameters
     ----------
     data : `ndarray`
-        Array of type float64 containing the data to be used.
-    period : `int`
+        An array containing values.
+    periods : `int`
         Number of periods to be used.
 
     Returns
     -------
     `ndarray`
-        Returns a ndarray of type float64 with triangular moving averages.
-    """
-    _validate_input(data = data, period = period)
-    return smma_calc(data, period)
-
-def lwma(data, period):
-    """
-    Linear weighted moving average
-
-    Parameters
-    ----------
-    data : `ndarray`
-        Array of type float64 containing the data to be used.
-    period : `int`
-        Number of periods to be used.
-
-    Returns
-    -------
-    `ndarray`
-        Returns a ndarray of type float64 with linear weighted moving averages.
+        An array containing calculated smoothed moving average values.
 
     Examples
     --------
     >>> import qufilab as ql
-    >>> data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    >>> lwma = ql.lwma(data, 2)
-    [nan 1.66666667 2.66666667 3.66666667 4.66666667]
+    >>> import numpy as np
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> print(df['close'].dtype)
+    float64
+    >>> smma = ql.smma(df['close'], periods = 10)
+    >>> print(smma)
+    [nan nan nan ... 208.85810754 209.43029679 209.78926711]
+    """
+    return smma_calc(data, periods)
+
+def lwma(data, periods):
+    """
+    .. Linear Weighted Moving Average
+
+    Parameters
+    ----------
+    data : `ndarray`
+        An array containing values.
+    periods : `int`
+        Number of periods to be used.
+
+    Returns
+    -------
+    `ndarray`
+        An array containing calculated linear weighted moving average values.
+
+    Examples
+    --------
+    >>> import qufilab as ql
+    >>> import numpy as np
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> print(df['close'].dtype)
+    float64
+    >>> lwma = ql.lwma(df['close'], periods = 10)
+    >>> print(lwma)
+    [nan nan nan ... 209.50327273 210.35927273 210.96381818]
 
     Notes
     -----
     The linear weighted moving average is calculated similar to the simple
-    moving average, except that the prices aren't equally weighted, but
+    moving average, except that the values aren't equally weighted, but
     linearly weighted with the highest weight going first and then decreasing
-    linearly. This implementation utilizes the number of periods as the highest
+    linearly. This implementation use the number of periods as the highest
     weight, and thereafter decreasing down to one.
 
     .. math:: lwma_K = \\frac{price_K \cdot w_n + price_{K-1} \cdot w_{n-1} \\
@@ -345,35 +367,36 @@ def lwma(data, period):
 
     where :math:`w_1 = 1, w_2 = 2,... w_n = n`
     """
-    _validate_input(data = data, period = period)
-    return lwma_calc(data, period)
+    return lwma_calc(data, periods)
 
-def wc(close, high, low):
+def wc(high, low, close):
     """
-    Weighted close
+    .. Weighted Close
 
     Parameters
     ----------
-    close : `ndarray`
-        Array of type float64 containing the closing prices to be used.
     high : `ndarray`
-        Array of type float64 containing the high prices to be used.
+        An array containing high prices.
     low : `ndarray`
-        Array of type float64 containing the low prices to be used.
+        An array containing low prices.
+    close : `ndarray`
+        An array containing closing prices.
 
     Returns
     -------
     `ndarray`
-        Returns a ndarray of type float64 with weighted close values.
+        An array containing calculated weighted close values.
 
     Examples
     --------
     >>> import qufilab as ql
-    >>> close  = np.array([5.0, 15.0, 25.0, 35.0, 45.0])
-    >>> high = np.array([10.0, 20.0, 30.0, 40.0, 50.0])
-    >>> low = np.array([1.0, 11.0, 21.0, 31.0, 41.0])
-    >>> wc = ql.wc(close, high, low)
-    [5.25 15.25 25.25 35.25 45.25]
+    >>> import numpy as np
+    ... 
+    >>> # Load a sample dataframe.
+    >>> df = ql.load_sample('MSFT')
+    >>> wc = ql.wc(df['high'], df['low'], df['close'])
+    >>> print(wc)
+    [153.1975 154.09 154.3075 ... 210.1875 213.2675 213.785]
 
     Notes
     -----
@@ -382,18 +405,6 @@ def wc(close, high, low):
     .. math:: wc_K = \\frac{2 \cdot close_K + high_K + low_K}{4}
 
     """
-    if not isinstance(close, np.ndarray) or close.dtype != np.float64:
-        raise ValueError("Param 'close' needs to be of type numpy.ndarray with " \
-            "dtype numpy.float64, i.e. double")
-
-    if not isinstance(high, np.ndarray) or high.dtype != np.float64:
-        raise ValueError("Param 'high' needs to be of type numpy.ndarray with " \
-            "dtype numpy.float64, i.e. double")
-
-    if not isinstance(low, np.ndarray) or low.dtype != np.float64:
-        raise ValueError("Param 'low' needs to be of type numpy.ndarray with " \
-            "dtype numpy.float64, i.e. double")
-
     return wc_calc(close, high, low)
 
 

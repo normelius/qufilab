@@ -376,5 +376,43 @@ bool abandoned_baby_conditions(Candlestick<T> c1, Candlestick<T> c2,
     return c3_conditions && c2_conditions && c1_conditions ? true : false;
 }
 
+/*
+ *  Conditions for Belt Hold.
+ *
+ *  Definition:
+ *      Belt Hold Bull
+ *          - Long green candle.
+ *          - No lower shadow.
+ *          - No or small upper shadow.
+ *
+ *      Belt Hold Bear
+ *          - Long red candle.
+ *          - No upper shadow.
+ *          - No or small lower shadow.
+ */
+template <typename T>
+bool belt_hold_conditions(Candlestick<T> candle, std::string type,
+        const float shadow_margin) {
+    
+    bool candle_conditions;
+
+    if (type == "bull") {
+        candle_conditions = candle.is_green() && 
+            candle.has_long_body() &&
+            !candle.has_lower_shadow(0.0) && 
+            candle.has_upper_shadow(shadow_margin) &&
+            !candle.has_upper_shadow(shadow_margin*2);
+    }
+
+    else if (type == "bear") {
+        candle_conditions = candle.is_red() && 
+            candle.has_long_body() &&
+            !candle.has_upper_shadow(0.0) &&
+            candle.has_lower_shadow(shadow_margin) && 
+            !candle.has_lower_shadow(shadow_margin*2);
+    }
+
+    return candle_conditions ? true : false;
+}
 
 #endif

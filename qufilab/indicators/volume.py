@@ -12,7 +12,7 @@ from qufilab.indicators._volume import *
 
 def acdi(close, high, low, volume):
     """
-    Accumulation distribution
+    .. Accumulation distribution
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ def acdi(close, high, low, volume):
 
 def obv(price, volume):
     """
-    On balance volume
+    .. On balance volume
 
     Parameters
     ----------
@@ -55,7 +55,7 @@ def obv(price, volume):
 
 def cmf(close, high, low, volume, period = 21):
     """
-    Chaikin money flow
+    .. Chaikin money flow
 
     Parameters
     ----------
@@ -81,7 +81,7 @@ def cmf(close, high, low, volume, period = 21):
 
 def ci(close, high, low, volume):
     """
-    Chaikin indicator
+    .. Chaikin indicator
 
     Parameters
     ----------
@@ -104,7 +104,7 @@ def ci(close, high, low, volume):
 
 def pvi(price, volume):
     """
-    Positive volume index
+    .. Positive volume index
 
     Parameters
     ----------
@@ -123,7 +123,7 @@ def pvi(price, volume):
 
 def nvi(price, volume):
     """
-    Negative volume index
+    .. Negative volume index
 
     Parameters
     ----------

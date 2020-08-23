@@ -620,7 +620,7 @@ def abandoned_baby_bull(high, low, open_, close, date = None, trend_period = 10)
     if date is None:
         return pattern
     
-    pattern_dates = date[abandoned_baby.astype(bool)]
+    pattern_dates = date[pattern.astype(bool)]
     return pattern_dates
 
 def abandoned_baby_bear(high, low, open_, close, date = None, trend_period = 10):
@@ -659,8 +659,89 @@ def abandoned_baby_bear(high, low, open_, close, date = None, trend_period = 10)
     if date is None:
         return pattern
     
-    pattern_dates = date[abandoned_baby.astype(bool)]
+    pattern_dates = date[pattern.astype(bool)]
     return pattern_dates
 
 
+def belt_hold_bull(high, low, open_, close, date = None, trend_period = 10,
+        shadow_margin = 5.0):
+    """
+    Belt Hold Bull
 
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    pattern : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    pattern_dates: `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    type_ = "bull"
+    pattern = belt_hold_calc(high, low, open_, close, trend_period, type_,
+            shadow_margin)
+    
+    if date is None:
+        return pattern
+    
+    pattern_dates = date[pattern.astype(bool)]
+    return pattern_dates
+
+
+def belt_hold_bear(high, low, open_, close, date = None, trend_period = 10,
+        shadow_margin = 5.0):
+    """
+    Belt Hold Bear
+
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    trend_period : `int`, optional
+        Specify number of periods for trend identification.
+
+    Returns
+    -------
+    pattern : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    pattern_dates: `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    type_ = "bear"
+    pattern = belt_hold_calc(high, low, open_, close, trend_period, type_,
+            shadow_margin)
+    
+    if date is None:
+        return pattern
+    
+    pattern_dates = date[pattern.astype(bool)]
+    return pattern_dates

@@ -12,7 +12,7 @@ from qufilab.indicators._momentum import *
 
 def rsi(price, period, rsi_type = "smoothed"):
     """
-    Relative strength index
+    .. Relative strength index
     
     Parameters
     ----------
@@ -33,7 +33,7 @@ def rsi(price, period, rsi_type = "smoothed"):
 
 def macd(price):
     """
-    Moving Average Convergence Divergence
+    .. MACD
 
     Parameters
     ----------
@@ -51,7 +51,7 @@ def macd(price):
 
 def willr(close, high, low, period):
     """
-    William's R
+    .. William's R
 
     Parameters
     ----------
@@ -73,7 +73,7 @@ def willr(close, high, low, period):
 
 def roc(price, period):
     """
-    Price rate of change
+    .. Price Rate of Change
 
     Parameters
     ----------
@@ -92,7 +92,7 @@ def roc(price, period):
 
 def vpt(price, volume):
     """
-    Volume price trend
+    .. Volume Price Trend
 
     Parameters
     ----------
@@ -111,7 +111,7 @@ def vpt(price, volume):
 
 def mi(price, period):
     """
-    Momentum indicator
+    .. Momentum Indicator
 
     Parameters
     ----------
@@ -130,7 +130,7 @@ def mi(price, period):
 
 def apo(price, period_slow = 26, period_fast = 12, ma = "sma"):
     """
-    Absolute price oscillator
+    .. Absolute Price Oscillator
 
     Parameters
     ----------
@@ -159,7 +159,7 @@ def apo(price, period_slow = 26, period_fast = 12, ma = "sma"):
 
 def bop(high, low, open_, close):
     """
-    Balance of power
+    .. Balance of Power
 
     Parameters
     ----------
@@ -182,7 +182,7 @@ def bop(high, low, open_, close):
 
 def cmo(close, period):
     """
-    Chande momentum indicator
+    .. Chande Momentum Indicator
 
     Parameters
     ----------
@@ -201,7 +201,7 @@ def cmo(close, period):
 
 def mfi(high, low, close, volume, period):
     """
-    Money flow index
+    .. Money Flow Index
 
     Parameters
     ----------
@@ -226,8 +226,10 @@ def mfi(high, low, close, volume, period):
 
 def ppo(price, period_fast = 12, period_slow = 26, ma = "ema"):
     """
-    Percentage price oscillator
-
+    .. Percentage Price Oscillator
+    
+    Parameters
+    ----------
     price : `ndarray`
         Array of type float64 or float32 containing price values.
     period_fast : `int`, optional
@@ -285,7 +287,7 @@ def ppo(price, period_fast = 12, period_slow = 26, ma = "ema"):
 
 def cci(close, high, low, period = 20):
     """
-    Commodity channel index
+    .. Commodity Channel Index
 
     Parameters
     ----------
@@ -309,7 +311,7 @@ def cci(close, high, low, period = 20):
 
 def aroon(high, low, period = 20):
     """
-    Aroon indicator
+    .. Aroon Indicator
     
     Parameters
     ----------

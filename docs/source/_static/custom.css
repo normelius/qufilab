@@ -2,3 +2,157 @@
 body{
     font-size: 14px;
 }
+
+
+:root {
+    --st-black: #0e1117;
+    --st-fontdark : #303231;
+    /*--st-green-100: rgba(60, 220, 143, 1);*/
+    --st-green-100: rgba(44, 159, 101, 1);
+
+    --st-green-80: rgba(60, 220, 143, 0.80);
+    --st-green-60: rgba(60, 220, 143, 0.60);
+    --st-green-40: rgba(60, 220, 143, 0.40);
+    --st-green-20: rgba(60, 220, 143, 0.20);
+    --st-green-10: rgba(60, 220, 143, 0.10);
+    --st-green-5: rgba(60, 220, 143, 0.05);
+    --st-green-caption: #05160E;
+
+    --st-bg: #ffffff;
+}
+body.wy-body-for-nav {
+    background: var(--st-bg) !important;
+    height: 100%;
+ }
+
+ /* background of content */
+.wy-nav-content {
+  background: none;
+}
+
+.wy-nav-content-wrap {
+  background: none;
+}
+
+/* Remove background color on side bar*/
+.wy-side-nav-search,
+.wy-menu-vertical li.current,
+.wy-menu-vertical li.toctree-l1.current li.toctree-l2 > a,
+.wy-menu-vertical li.toctree-l2.current > a,
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a,
+.wy-nav-side{
+    background: var(--st-bg);
+}
+
+/* Increase padding on left sid bar */
+.wy-menu-vertical {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
+    white-space: nowrap;
+}
+
+/* Settings for side bar*/
+.wy-menu-vertical li  a {
+    color: var(--st-black);
+    border-radius: 5px;
+}
+
+/* Remove borders from current link on side bar */
+.wy-menu-vertical li.toctree-l1.current > a,
+.wy-menu-vertical li.current a {
+    border: none;
+}
+
+
+/* Hover color on left side bar */
+.wy-menu-vertical li.toctree-l1.current > a:hover,
+.wy-menu-vertical li.toctree-l1 > a:hover,
+.wy-menu-vertical li.toctree-l1.current li.toctree-l2 > a:hover,
+.wy-menu-vertical li.toctree-l2.current > a:hover,
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a:hover,
+.wy-menu-vertical a:hover,
+.wy-menu-vertical li ul li a:hover {
+    background: var(--st-green-10);
+}
+
+/* Left side item color*/
+.wy-menu-vertical > ul.current > li.current > a,
+.wy-menu-vertical > ul.current > li.toctree-l1.current > a,
+.wy-menu-vertical > ul.current li.toctree-l2.current > a,
+.wy-menu-vertical > ul.current li.toctree-l3.current > a {
+    color: var(--st-green-100);
+    background: none;
+}
+
+
+
+.caption-text {
+    color: var(--st-green-caption);
+}
+
+/* Change indicator summary table tds*/
+.rst-content tr[class^="row-odd"] > td,
+.rst-content tr[class^="row-even"] > td {
+    background: var(--st-green-10) !important;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: solid 1px var(--st-green-20);
+}
+
+/* Remove border from indicator summary table*/
+.rst-content .docutils {
+    border: none !important;
+}
+
+/* Add indicator summary table border radius */
+.rst-content .wy-table-responsive {
+    border-radius: 5px !important;
+}
+
+/* Style change for the examples */
+.rst-content div[class^="highlight"] {
+  background-color: var(--st-green-5);
+  border-radius: 5px;
+  border: none;
+}
+
+.rst-content dt[class^="field-odd"],
+.rst-content dt[class^="field-even"] {
+    color: var(--st-fontdark) !important;
+}
+
+/* Change background color over each parameter */
+.rst-content dd[class^="field-odd"] > dl > dt,
+.rst-content dd[class^="field-even"] > dl > dt{
+    background: none !important;
+    border-left: none !important;
+    color: var(--st-fontdark) !important;
+}
+
+/* Color change of each function name */
+.rst-content .function > dt{
+    background: var(--st-green-5) !important;
+    border-top: 0.2rem solid var(--st-green-100) !important;
+    border-radius: 2px !important;
+}
+
+.rst-content .sig-param, 
+.rst-content .sig-paren {
+    color: var(--st-green-100) !important;
+}
+
+
+/* Search */
+#rtd-search-form > input[type="text"] {
+  box-shadow: none;
+  width: 240px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-radius: 0px !important;
+  border-bottom: 1px solid var(--st-green-caption);
+}

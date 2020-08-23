@@ -461,7 +461,41 @@ py::array_t<bool> abandoned_baby_calc(const py::array_t<T> high,
     return result_container.result;
 }
 
+/*
+ *  Implementation of Belt Hold.
+ *  
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      trend_period (int) : Period for moving average in order to identify trend.
+ */
+template <typename T>
+py::array_t<bool> belt_hold_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        py::array_t<T> close, const int trend_period, const std::string type,
+        const float shadow_margin) {
 
+    const int body_avg_period = 14;
+
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
+
+    for (int idx = body_avg_period + 2; idx < data.size; ++idx) {
+        Candlestick<T> candle = {data.high[idx], data.low[idx], 
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
+
+        bool correct_cond = belt_hold_conditions(candle, type, shadow_margin);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
+        }
+    }
+
+    return result_container.result;
+}
 
 
 PYBIND11_MODULE(_bullish, m) {
@@ -497,6 +531,9 @@ PYBIND11_MODULE(_bullish, m) {
 
     m.def("abandoned_baby_calc", &abandoned_baby_calc<double>, "Abandoned baby pattern");
     m.def("abandoned_baby_calc", &abandoned_baby_calc<float>, "Abandoned baby pattern");
+
+    m.def("belt_hold_calc", &belt_hold_calc<double>, "Belt Hold pattern");
+    m.def("belt_hold_calc", &belt_hold_calc<float>, "Belt Hold pattern");
 
 }
 

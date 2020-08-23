@@ -86,7 +86,7 @@ class TestQuant(unittest.TestCase):
         """ 
         Test weighted close.
         """
-        wc_qufilab = qufilab.wc(self.close, self.high, self.low)
+        wc_qufilab = qufilab.wc(self.high, self.low, self.close)
         wc_talib = talib.WCLPRICE(self.high, self.low, self.close)
         np.testing.assert_allclose(wc_qufilab, wc_talib, rtol = self.tolerance)
         

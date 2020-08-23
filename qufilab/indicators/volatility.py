@@ -11,12 +11,12 @@ from qufilab.indicators._volatility import *
 
 def bbands(price, period, deviation = 2):
     """
-    Bollinger bands
+    .. Bollinger Bands
 
     Parameters
     ----------
     price : `ndarray`
-        Array of type float64 or flaot32 containing the prices.
+        Array of type float64 or float32 containing the prices.
     period : `int`
         Number of periods to be used.
     deviation : `int`, optional
@@ -36,16 +36,16 @@ def bbands(price, period, deviation = 2):
 
 def kc(close, high, low, period = 20, period_atr = 20, deviation = 2):
     """
-    Keltner channels
+    .. Keltner channels
 
     Parameters
     ----------
     close : `ndarray`
-        Array of type float64 or flaot32 containing the closing prices.
+        Array of type float64 or float32 containing the closing prices.
     high : `ndarray`
-        Array of type float64 or flaot32 containing the high prices.
+        Array of type float64 or float32 containing the high prices.
     low : `ndarray`
-        Array of type float64 or flaot32 containing the low prices.
+        Array of type float64 or float32 containing the low prices.
     period : `int`, optional
         Number of periods to be used.
         Defaults to 20.
@@ -69,37 +69,37 @@ def kc(close, high, low, period = 20, period_atr = 20, deviation = 2):
 
 def atr(close, high, low, period):
     """
-    Average true range
+    .. Average true range
 
     Parameters
     ----------
     close : `ndarray`
-        Array of type float64 or flaot32 containing the closing prices.
+        Array of type float64 or float32 containing the closing prices.
     high : `ndarray`
-        Array of type float64 or flaot32 containing the high prices.
+        Array of type float64 or float32 containing the high prices.
     low : `ndarray`
-        Array of type float64 or flaot32 containing the low prices.
+        Array of type float64 or float32 containing the low prices.
     period : `int`
         Number of periods to be used.
 
     Returns
     -------
     `ndarray`
-        Array of type float64 or flaot32 containing the calculated
+        Array of type float64 or float32 containing the calculated
         average true range values.
     """
     return atr_calc(close, high, low, period)
 
 def cv(high, low, period = 10, smoothing_period = 10):
     """
-    Chaikin volatility
+    .. Chaikin volatility
 
     Parameters
     ----------
     high : `ndarray`
-        Array of type float64 or flaot32 containing the high prices.
+        Array of type float64 or float32 containing the high prices.
     low : `ndarray`
-        Array of type float64 or flaot32 containing the low prices.
+        Array of type float64 or float32 containing the low prices.
     period : `int`, optional
         Number of periods to be used.
         Defaults to 10.
@@ -110,7 +110,7 @@ def cv(high, low, period = 10, smoothing_period = 10):
     Returns
     -------
     `ndarray`
-        Array of type float64 or flaot32 containing the calculated
+        Array of type float64 or float32 containing the calculated
         chaikin volatility values.
     """
     return cv_calc(high, low, period, smoothing_period)
