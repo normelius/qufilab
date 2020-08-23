@@ -11,6 +11,7 @@ from .indicators.momentum import *
 # Patterns
 from .patterns.bullish import *
 
+# Sample data
 from .sample.load_sample import *
 
 
