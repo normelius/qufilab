@@ -56,6 +56,10 @@ Marubozu White
 **************
 .. autofunction:: marubozu_white
 
+Marubozu Black
+**************
+.. autofunction:: marubozu_black
+
 Piercing
 ********
 .. autofunction:: piercing

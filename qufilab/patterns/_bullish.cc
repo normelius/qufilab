@@ -168,7 +168,45 @@ py::array_t<bool> marubozu_white_calc(const py::array_t<T> high,
         Candlestick<T> candle = {data.high[idx], data.low[idx], 
             data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
         
-        bool correct_cond = maribozu_white_conditions(candle, shadow_margin);
+        bool correct_cond = marubozu_white_conditions(candle, shadow_margin);
+        if (correct_cond) {
+            result_container.found_pattern(idx);
+        }
+    }    
+
+    return result_container.result;
+}
+
+/*
+ *  Implementation of MARUBOZU_BLACK.
+ *  
+ *  Params:
+ *      high (py::array_t<T>) : Array with high prices.
+ *      low (py::array_t<T>) : Array with low prices.
+ *      open (py::array_t<T>) : Array with opening prices.
+ *      close (py::array_t<T>) : Array with close prices.
+ *      shadow_margin (float) : Float specifying what margin should be allowed
+ *          for the shadows. For example, by using shadow_marign = 5, one allows
+ *          the upper/lower shadows to be as high as 5% of the body size.
+ *      trend_period (int) : Specify the period for identify trend.
+ */
+template <typename T>
+py::array_t<bool> marubozu_black_calc(const py::array_t<T> high, 
+        const py::array_t<T> low, const py::array_t<T> open, 
+        py::array_t<T> close, T shadow_margin, const int trend_period) {
+
+    const int body_avg_period = 14;
+
+    InputContainer<T> data = {high, low, open, close};
+    ResultContainer result_container = {data.size};
+    auto trend = get_trend("sma", close, trend_period);
+    auto body_avg = get_body_avg(open, close, body_avg_period);
+
+    for (int idx = body_avg_period; idx < data.size; ++idx) {
+        Candlestick<T> candle = {data.high[idx], data.low[idx], 
+            data.open[idx], data.close[idx], body_avg[idx], trend[idx]};
+        
+        bool correct_cond = marubozu_black_conditions(candle, shadow_margin);
         if (correct_cond) {
             result_container.found_pattern(idx);
         }
@@ -510,6 +548,9 @@ PYBIND11_MODULE(_bullish, m) {
 
     m.def("marubozu_white_calc", &marubozu_white_calc<double>, "Marubozu white pattern");
     m.def("marubozu_white_calc", &marubozu_white_calc<float>, "Marubozu white pattern");
+
+    m.def("marubozu_black_calc", &marubozu_black_calc<double>, "Marubozu black pattern");
+    m.def("marubozu_black_calc", &marubozu_black_calc<float>, "Marubozu black pattern");
 
     m.def("spinning_top_white_calc", &spinning_top_white_calc<double>, "Spinning top white pattern");
     m.def("spinning_top_white_calc", &spinning_top_white_calc<float>, "Spinning top white pattern");

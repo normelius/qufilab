@@ -108,7 +108,7 @@ bool dragonfly_doji_conditions(Candlestick<T> candle) {
 }
 
 /*
- *  Conditions for MARIBOZU_WHITE
+ *  Conditions for MARUBOZU_WHITE
  *
  *  Param:
  *      candle (Candlestick<T>) : Struct containing data for a single candlestick.
@@ -124,14 +124,40 @@ bool dragonfly_doji_conditions(Candlestick<T> candle) {
  *          parameter.
  */
 template <typename T>
-bool maribozu_white_conditions(Candlestick<T> candle, T shadow_margin) {
+bool marubozu_white_conditions(Candlestick<T> candle, T shadow_margin) {
     bool candle_conditions = candle.has_long_body() && 
         !candle.has_upper_shadow(shadow_margin) && 
-        !candle.has_lower_shadow(shadow_margin);
+        !candle.has_lower_shadow(shadow_margin) &&
+        candle.is_green();
 
     return candle_conditions ? true : false;
 }
 
+/*
+ *  Conditions for MARUBOZU_BLACK
+ *
+ *  Param:
+ *      candle (Candlestick<T>) : Struct containing data for a single candlestick.
+ *      shadow_margin (T) : Specify what shadow margin should be allowed
+ *          for upper/lower shadow.
+ *
+ *  Definition:
+ *      - Candlestick body should be long. This is implemented as being bigger
+ *          than the 14 period ema of the body sizes.
+ *      - Candlestick should have no (or very little) upper and lower shadow.
+ *          This implementation doesn't strictly enforce zero shadows, but
+ *          using a small margin which can be specified with the 'shadow_margin'
+ *          parameter.
+ */
+template <typename T>
+bool marubozu_black_conditions(Candlestick<T> candle, T shadow_margin) {
+    bool candle_conditions = candle.has_long_body() && 
+        !candle.has_upper_shadow(shadow_margin) && 
+        !candle.has_lower_shadow(shadow_margin) &&
+        candle.is_red();
+
+    return candle_conditions ? true : false;
+}
 /*
  *  Conditions for SPINNING_TOP_WHITE
  *

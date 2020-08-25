@@ -239,6 +239,48 @@ def marubozu_white(high, low, open_, close, date = None, shadow_margin = 5.0, pe
     marubozu_white_dates = date[marubozu_white.astype(bool)]
     return marubozu_white_dates
 
+def marubozu_black(high, low, open_, close, date = None, shadow_margin = 5.0,
+        periods = 10):
+    """
+    Parameters
+    ----------
+    high : `ndarray`
+        Array of type float64 or float32 containing high prices.
+    low : `ndarray`
+        Array of type float64 or float32 containing low prices.
+    open_ : `ndarray`
+        Array of type float64 or float32 containing opening prices.
+    close : `ndarray`
+        Array of type float64 or float32 containing close prices.
+    date : `ndarray`, optional
+        Array containing corresponding dates which can be used in case
+        one wants to only return the dates where a pattern has been found.
+    shadow_margin : `float`, optional
+        Specify what margin should be allowed for the shadows. By using for 
+        example 5%, both the lower and upper shadow can be as high as 5%
+        of the candlestick body size. This exist to allow some margin (not
+        restrict to no shadow).
+    periods : `int`, optional
+        Specifying number of periods for trend identification.
+
+    Returns
+    -------
+    marubozu_black : `ndarray`
+        A numpy ndarray of type bool specifying true whether
+        a pattern has been found or false otherwise. 
+    marubozu_black_dates : `ndarray`
+        A numpy ndarray containing the dates when a pattern has
+        bee found. This only returns in case `date` parameter
+        has been specified.
+    """
+    pattern = marubozu_black_calc(high, low, open_, close, shadow_margin, periods)
+    
+    if date is None:
+        return pattern
+    
+    pattern_dates = date[pattern.astype(bool)]
+    return pattern_dates
+
 def spinning_top_white(high, low, open_, close, date = None, period = 10):
     """
     Parameters
