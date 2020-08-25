@@ -158,5 +158,5 @@ body.wy-body-for-nav {
 }
 
 .rst-versions .rst-current-version {
-  background: transparent !important;
+  background: none !important;
 }
