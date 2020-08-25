@@ -158,7 +158,6 @@ body.wy-body-for-nav {
 }
 
 .rst-versions .rst-current-version {
-  border-top: solid 10px #222c32 !important;
-  background: transparent !important;
+  background: white !important;
 
 }
