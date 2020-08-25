@@ -157,7 +157,7 @@ body.wy-body-for-nav {
   border-bottom: 1px solid var(--st-green-caption);
 }
 
-.rst-versions .rst-current-version .shift-up {
+.rst-versions .rst-current-version {
   background: white !important;
 }
 
