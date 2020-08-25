@@ -156,3 +156,7 @@ body.wy-body-for-nav {
   border-radius: 0px !important;
   border-bottom: 1px solid var(--st-green-caption);
 }
+
+.rst-versions .rst-current-version {
+  background: transparent !important;
+}
