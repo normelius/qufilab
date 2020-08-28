@@ -1,16 +1,23 @@
-Candlestick patterns
+Candlestick Patterns
 ====================
-
 
 .. currentmodule:: qufilab
 
-Abandoned Baby Bull
-*******************
+Abandoned Baby - Bear
+*********************
+.. autofunction:: abandoned_baby_bear
+
+Abandoned Baby - Bull
+*********************
 .. autofunction:: abandoned_baby_bull
 
-Abandoned Baby Bear
-*******************
-.. autofunction:: abandoned_baby_bear
+Belt Hold - Bear
+****************
+.. autofunction:: belthold_bear
+
+Belt Hold - Bull
+****************
+.. autofunction:: belthold_bull
 
 Doji
 ****
@@ -20,37 +27,37 @@ Dragonfly Doji
 **************
 .. autofunction:: dragonfly_doji
 
-Engulfing Bull
-**************
-.. autofunction:: engulfing_bull
-
-Engulfing Bear
-**************
+Engulfing - Bear
+****************
 .. autofunction:: engulfing_bear
+
+Engulfing - Bull
+****************
+.. autofunction:: engulfing_bull
 
 Hammer
 ******
 .. autofunction:: hammer
 
-Harami Bull
-***********
-.. autofunction:: harami_bull
-
-Harami Bear
-***********
+Harami - Bear
+*************
 .. autofunction:: harami_bear
+
+Harami - Bull
+*************
+.. autofunction:: harami_bull
 
 Inverted Hammer
 ***************
 .. autofunction:: inverted_hammer
 
-Kicking Bull
-************
-.. autofunction:: kicking_bull
-
-Kicking Bear
-************
+Kicking - Bear
+**************
 .. autofunction:: kicking_bear
+
+Kicking - Bull
+**************
+.. autofunction:: kicking_bull
 
 Marubozu White
 **************

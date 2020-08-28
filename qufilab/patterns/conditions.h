@@ -417,7 +417,7 @@ bool abandoned_baby_conditions(Candlestick<T> c1, Candlestick<T> c2,
  *          - No or small lower shadow.
  */
 template <typename T>
-bool belt_hold_conditions(Candlestick<T> candle, std::string type,
+bool belthold_conditions(Candlestick<T> candle, std::string type,
         const float shadow_margin) {
     
     bool candle_conditions;
