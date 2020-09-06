@@ -437,8 +437,6 @@ return wc;
 }
 
 
-// Declare all functions and it's respective argument type. This is needed
-// to so that ordinary .py files can interface with these functions.
 PYBIND11_MODULE(_trend, m) {
     m.def("sma_calc", &sma_calc<double>, "Simple Moving Average");
     m.def("sma_calc", &sma_calc<float>, "Simple Moving Average");
