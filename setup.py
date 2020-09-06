@@ -13,6 +13,7 @@ NAME = "qufilab"
 AUTHOR = "Anton Normelius"
 EMAIL = "a.normelius@gmail.com"
 URL = "https://github.com/normelius/qufilab"
+VERSION = '0.0.1'
 
 
 # Read readme.
@@ -22,6 +23,12 @@ with open("README.md", "r") as fh:
 # Read requirements.
 with open('requirements.txt') as f:
     required = f.read().splitlines()
+
+# Read latest version.
+VER = {}
+version_path = convert_path("qufilab/__version__.py")
+with open(version_path) as version_file:
+    exec(version_file.read(), VER)
 
 class get_pybind_include(object):
     """
@@ -198,6 +205,7 @@ setup(
     author=AUTHOR,
     author_email=EMAIL,
     url=URL,
+    version=VER['__version__'],
     packages=find_packages(),
     install_requires=required,
     long_description=long_description,
