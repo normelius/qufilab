@@ -180,7 +180,7 @@ ext_modules = [
     # Patterns
     ## Bullish extension
     Extension(
-        'qufilab.patterns._bullish.cc',
+        'qufilab.patterns._bullish',
         sorted(['qufilab/patterns/_bullish.cc']),
         include_dirs=[
             get_pybind_include(),
