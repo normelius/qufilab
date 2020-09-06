@@ -13,8 +13,7 @@ NAME = "qufilab"
 AUTHOR = "Anton Normelius"
 EMAIL = "a.normelius@gmail.com"
 URL = "https://github.com/normelius/qufilab"
-VERSION = '0.0.1'
-
+DOWNLOAD_URL = "https://github.com/normelius/qufilab/archive/v0.0.1.tar.gz"
 
 # Read readme.
 with open("README.md", "r") as fh:
@@ -207,6 +206,7 @@ setup(
     url=URL,
     version=VER['__version__'],
     packages=find_packages(),
+    download_url=DOWNLOAD_URL,
     install_requires=required,
     long_description=long_description,
     long_description_content_type="text/markdown",
