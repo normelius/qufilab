@@ -1,6 +1,8 @@
 
+# Models, not yet implemented
 main.py
 models.cc
+CMakeLists.txt
 
 
 # Only used for checking time comparisons
@@ -9,7 +11,7 @@ qufilab/indicators/README.md
 # Work in progress.
 qufilab/dashboard/
 
-# Example dir for now
+# Don't show example dir.
 examples/
 
 tests/*.m

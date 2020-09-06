@@ -5,12 +5,12 @@ Qufilab is a fast and modern technical analysis library.
 * Wide array of technical indicators.
 * Candlestick pattern recognition.
 
+Documentation for QufiLab can be found at: <https://qufilab.readthedocs.io>
+
 ## Installation
 ```bash
 pip3 install qufilab
 ```
-
-Documentation for QufiLab can be found at: <https://qufilab.readthedocs.io>
 
 ## Usage
 **WARNING**: All of qufilab's technical indicators are implemented in c++
