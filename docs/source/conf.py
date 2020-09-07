@@ -29,7 +29,7 @@ author = 'Anton Normelius'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'numpydoc', 
-        'sphinx.ext.extlinks', 'autodocsumm']
+        'sphinx.ext.extlinks', 'autodocsumm', 'sphinx-prompt']
 
 # Uncomment line below if source should be included. 
 #extensions.append('sphinx.ext.linkcode')
